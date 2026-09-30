@@ -1,0 +1,16 @@
+{
+ "name": "AutoLitige Expert — Diagnostic pannes & litiges auto",
+ "short_name": "AutoLitige",
+ "start_url": "./index.html",
+ "scope": "./",
+ "display": "standalone",
+ "orientation": "portrait",
+ "background_color": "#0b1220",
+ "theme_color": "#0b1220",
+ "lang": "fr",
+ "description": "Analyse de litiges automobiles : origines de pannes, codes DTC, rappels NHTSA/Rappel Conso/Safety Gate, responsabilité selon le droit français. 100 % hors ligne.",
+ "icons": [
+  {"src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any"},
+  {"src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable"}
+ ]
+}
