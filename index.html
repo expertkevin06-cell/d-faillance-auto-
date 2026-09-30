@@ -2,11 +2,12 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
+<meta http-equiv="Cache-Control" content="no-cache">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0b1220">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="description" content="AutoLitige Expert v2.3 — base technique marques/modèles/motorisations, pannes connues, rappels, DTC, droit français. Hors ligne.">
-<title>AutoLitige Expert v2.3 — Pannes connues, rappels & litiges auto</title>
+<meta name="description" content="AutoLitige Expert v2.4 — base technique marques/modèles/motorisations, pannes connues, rappels, DTC, droit français. Hors ligne.">
+<title>AutoLitige Expert v2.4 — Pannes connues, rappels & litiges auto</title>
 <link rel="manifest" href="./manifest.webmanifest">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='112' fill='%232563eb'/%3E%3Cpath d='M96 300c0-10 6-18 16-20l40-8 34-62c8-14 22-22 38-22h84c16 0 30 8 38 22l34 62 40 8c10 2 16 10 16 20v52c0 8-6 14-14 14h-20c-8 0-14-6-14-14v-10H166v10c0 8-6 14-14 14h-20c-8 0-14-6-14-14z' fill='%23fff'/%3E%3Ccircle cx='196' cy='316' r='26' fill='%230b1220'/%3E%3Ccircle cx='316' cy='316' r='26' fill='%230b1220'/%3E%3C/svg%3E">
 <style>
@@ -80,13 +81,13 @@ footer{color:var(--mut);font-size:11px;text-align:center;padding:16px;line-heigh
 </head>
 <body>
 <header>
- <div class="brand"><span id="logoIco"></span><div><b>AutoLitige Expert v2.3</b><small id="connChip" class="warn">Hors ligne</small></div></div>
+ <div class="brand"><span id="logoIco"></span><div><b>AutoLitige Expert v2.4</b><small id="connChip" class="warn">Hors ligne</small></div></div>
  <div class="hacts"><button class="ibtn" id="btnNotif"></button><button class="ibtn" id="btnLock"></button></div>
 </header>
 <div id="errBanner"></div>
 <main>
 <section class="screen" id="s-login">
- <div class="center"><span id="logoBig"></span><h1>AutoLitige Expert v2.3</h1>
+ <div class="center"><span id="logoBig"></span><h1>AutoLitige Expert v2.4</h1>
  <p class="sub">Base technique marques → modèles → motorisations<br>Pannes connues · Campagnes de rappel · Codes DTC · Droit français<br><b>100 % fonctionnel hors ligne</b></p></div>
  <div class="card" style="margin-top:16px">
  <button class="btn" id="btnAdmin">🔐 Connexion Administrateur</button>
@@ -165,7 +166,7 @@ footer{color:var(--mut);font-size:11px;text-align:center;padding:16px;line-heigh
  <div class="card"><h3>📦 Kit</h3><button class="btn sm" id="kit-btn">⬇️ Kit complet</button></div>
 </section>
 <section class="screen" id="s-about">
- <div class="card"><h3>ℹ️ À propos</h3><p class="sub">AutoLitige Expert v2.3 — aide informative (ni expert agréé, ni avocat). 4G/5G/Wi‑Fi et hors ligne.</p></div>
+ <div class="card"><h3>ℹ️ À propos</h3><p class="sub">AutoLitige Expert v2.4 — aide informative (ni expert agréé, ni avocat). 4G/5G/Wi‑Fi et hors ligne.</p></div>
  <div class="card src"><h3>🌐 Sources officielles</h3>
  <div class="kv"><span>NHTSA</span><a href="https://www.nhtsa.gov/recalls" target="_blank" rel="noopener">nhtsa.gov/recalls</a></div>
  <div class="kv"><span>Rappel Conso</span><a href="https://rappels-produits.gouv.fr" target="_blank" rel="noopener">rappels-produits.gouv.fr</a></div>
@@ -457,89 +458,129 @@ var DB;try{DB=JSON.parse(localStorage.getItem(LS_KEY))||seed()}catch(e){DB=seed(
 function save(){DB.savedAt=iso();try{localStorage.setItem(LS_KEY,JSON.stringify(DB))}catch(e){toast('Stockage saturé','warn')}}
 function getSession(){try{return JSON.parse(localStorage.getItem(SESS_KEY))}catch(e){return null}}
 function setSession(s){if(s){localStorage.setItem(SESS_KEY,JSON.stringify(s))}else{localStorage.removeItem(SESS_KEY)}}
-function sessionValid(){var s=getSession();if(!s)return null;if(s.role==='admin')return s;if(s.role==='user'){var ok=DB.codes.some(function(x){return x.code===s.code&&x.status==='active'});if(ok)return s;setSession(null)}return null}
-function selfTest(){var problems=[];var engines=0;var brands=0;
-for(var b in KB){brands++;var B=KB[b];var ek,m2,k2;
-for(ek in B.e){engines++;var e=B.e[ek];var i3;for(i3=0;i3<e.i.length;i3++){if(!ISS[e.i[i3]])problems.push('ISS '+e.i[i3])}var r3;for(r3=0;r3<e.r.length;r3++){if(!REC[e.r[r3]])problems.push('REC '+e.r[r3])}}
-for(m2 in B.m){for(k2=0;k2<B.m[m2].length;k2++){if(!B.e[B.m[m2][k2]])problems.push(b+'/'+m2+'/'+B.m[m2][k2])}}}
+function sessionValid(){var s=getSession();if(!s)return null;if(s.role==='admin')return s;if(s.role==='user'){var ok=false;var i;for(i=0;i<DB.codes.length;i++){if(DB.codes[i].code===s.code&&DB.codes[i].status==='active')ok=true}if(ok)return s;setSession(null)}return null}
+function selfTest(){var problems=[];var engines=0;var brands=0;var b,m,i;
+for(b in KB){brands++;var B=KB[b];var ek;
+for(ek in B.e){engines++;var e=B.e[ek];var j;
+for(j=0;j<e.i.length;j++){if(!ISS[e.i[j]])problems.push('ISS '+e.i[j])}
+for(j=0;j<e.r.length;j++){if(!REC[e.r[j]])problems.push('REC '+e.r[j])}}
+for(m in B.m){for(i=0;i<B.m[m].length;i++){if(!B.e[B.m[m][i]])problems.push(b+'/'+m+'/'+B.m[m][i])}}}
 var nIss=0,x;for(x in ISS)nIss++;var nRec=0,y;for(y in REC)nRec++;
 return{problems:problems,engines:engines,brands:brands,iss:nIss,rec:nRec}}
 var NAV_ITEMS=[{id:'s-new',l:'Analyse',ic:'car',r:'all'},{id:'s-lib',l:'Cas connus',ic:'book',r:'all'},{id:'s-history',l:'Historique',ic:'hist',r:'all'},{id:'s-access',l:'Accès',ic:'shield',r:'admin'},{id:'s-settings',l:'Réglages',ic:'gear',r:'admin'},{id:'s-about',l:'Infos',ic:'info',r:'all'}];
-function renderNav(){var s=sessionValid();var html='';var i;for(i=0;i<NAV_ITEMS.length;i++){var n=NAV_ITEMS[i];if(n.r==='admin'&&!(s&&s.role==='admin'))continue;html+='<button data-goto="'+n.id+'">'+IC[n.ic]+'<span>'+n.l+'</span></button>'}
-$('#nav').innerHTML=html;$$('#nav button').forEach(function(b){b.onclick=function(){show(b.getAttribute('data-goto'))}})}
-function show(id){var scr=document.querySelectorAll('.screen');var i;for(i=0;i<scr.length;i++){scr[i].classList.remove('on')}var el=$('#'+id);if(el)el.classList.add('on');$$('#nav button').forEach(function(b){b.classList.toggle('on',b.getAttribute('data-goto')===id)});window.scrollTo(0,0);
-if(id==='s-access')renderAccess();if(id==='s-settings')renderSettings();if(id==='s-history')renderHistory()}
-function updateConn(){var c=navigator.connection;var chip=$('#connChip');if(navigator.onLine){chip.className='ok';chip.textContent='En ligne'+((c&&c.effectiveType)?' · '+c.effectiveType.toUpperCase():'')}else{chip.className='warn';chip.textContent='Hors ligne · base locale'}}
+function renderNav(){var s=sessionValid();var html='';var i;
+for(i=0;i<NAV_ITEMS.length;i++){var n=NAV_ITEMS[i];if(n.r==='admin'&&!(s&&s.role==='admin'))continue;html+='<button data-goto="'+n.id+'">'+IC[n.ic]+'<span>'+n.l+'</span></button>'}
+$('#nav').innerHTML=html;
+$$('#nav button').forEach(function(b){b.onclick=function(){show(b.getAttribute('data-goto'))}})}
+function show(id){var scr=document.querySelectorAll('.screen');var i;for(i=0;i<scr.length;i++){scr[i].classList.remove('on')}
+var el=$('#'+id);if(el)el.classList.add('on');
+$$('#nav button').forEach(function(b){b.classList.toggle('on',b.getAttribute('data-goto')===id)});
+window.scrollTo(0,0);
+if(id==='s-access')renderAccess();
+if(id==='s-settings')renderSettings();
+if(id==='s-history')renderHistory()}
+function updateConn(){var c=navigator.connection;var chip=$('#connChip');
+if(navigator.onLine){chip.className='ok';chip.textContent='En ligne'+((c&&c.effectiveType)?' · '+c.effectiveType.toUpperCase():'')}
+else{chip.className='warn';chip.textContent='Hors ligne · base locale'}}
 addEventListener('online',updateConn);addEventListener('offline',updateConn);
-/* --- auth --- */
-$('#logoIco').innerHTML=LOGO_SVG;$('#logoBig').innerHTML='<div class="logo-big">'+LOGO_SVG+'</div>';$('#btnNotif').innerHTML=IC.bell;$('#btnLock').innerHTML=IC.lock;
-$('#modalBack').addEventListener('click',function(e){if(e.target.id==='modalBack')closeModal()});
-$('#btnLock').onclick=function(){if(sessionValid()){logout()}else{show('s-login')}};
-$('#btnNotif').onclick=function(){if(!('Notification' in window)){toast('Non supporté','warn');return}Notification.requestPermission().then(function(p){toast(p==='granted'?'Notifications OK':'Refusées',p==='granted'?'ok':'bad')})};
-$('#btnAdmin').onclick=function(){modal('<h3>🔐 Administrateur</h3><label>Mot de passe</label><input type="password" id="adm-pass"><button class="btn" id="adm-go">Valider</button><button class="btn sec" onclick="closeModal()">Annuler</button>');
-$('#adm-go').onclick=function(){if(v('adm-pass')===ADMIN_KEY){setSession({role:'admin'});closeModal();toast('Bienvenue','ok');enterApp()}else{toast('Mot de passe incorrect','bad')}}};
-$('#btnReq').onclick=function(){show('s-request')};
-$('#btnCode').onclick=function(){show('s-code')};
-$('#rq-send').onclick=function(){var n=v('rq-name');if(!n){toast('Nom requis','warn');return}DB.requests.push({id:uid(),name:n,contact:v('rq-contact'),motif:v('rq-motif'),date:iso(),status:'pending'});save();toast('Demande envoyée','ok');notify('Nouvelle demande d\u2019accès',n);showPending(DB.requests[DB.requests.length-1].id)};
-$('#code-go').onclick=function(){activateCode(v('code-in').toUpperCase(),v('code-name'))};
+/* --- sessions --- */
 var _pendId=null;
-function showPending(id){show('s-pending');_pendId=id;if(window._pendTimer)clearInterval(window._pendTimer);
-var draw=function(){var r=null;var i;for(i=0;i<DB.requests.length;i++){if(DB.requests[i].id===id)r=DB.requests[i]}if(!r){show('s-login');return}var h='';
+function logout(){setSession(null);renderNav();show('s-login')}
+function enterApp(){renderNav();show('s-new')}
+function activateCode(code,name){var c=null;var i;
+for(i=0;i<DB.codes.length;i++){if(DB.codes[i].code===code)c=DB.codes[i]}
+if(!c){toast('Code inconnu','bad');return}
+if(c.status==='revoked'){toast('Code révoqué','bad');return}
+setSession({role:'user',code:code,name:name||c.name});
+var u=null;for(i=0;i<DB.users.length;i++){if(DB.users[i].code===code)u=DB.users[i]}
+if(!u)DB.users.push({id:uid(),code:code,name:name||c.name,date:iso(),status:'active'});
+save();toast('Accès activé','ok');enterApp()}
+window.activatePending=function(){var r=null;var i;
+for(i=0;i<DB.requests.length;i++){if(DB.requests[i].id===_pendId)r=DB.requests[i]}
+if(r&&r.code)activateCode(r.code,r.name)};
+function showPending(id){show('s-pending');_pendId=id;
+if(window._pendTimer)clearInterval(window._pendTimer);
+var draw=function(){var r=null;var i;
+for(i=0;i<DB.requests.length;i++){if(DB.requests[i].id===id)r=DB.requests[i]}
+if(!r){show('s-login');return}
+var h='';
 if(r.status==='pending'){h='<div style="font-size:40px">⏳</div><h3>Demande en attente</h3><button class="btn sec" onclick="logout()">Retour</button>'}
 else if(r.status==='denied'){h='<div style="font-size:40px">⛔</div><h3>Refusée</h3><button class="btn sec" onclick="logout()">Retour</button>'}
 else{h='<div style="font-size:40px">✅</div><h3>Acceptée !</h3><div class="mono">'+r.code+'</div><button class="btn" onclick="activatePending()">Activer mon accès</button>'}
-$('#pend-body').innerHTML=h};draw();
-window._pendTimer=setInterval(function(){var r=null;var i;for(i=0;i<DB.requests.length;i++){if(DB.requests[i].id===id)r=DB.requests[i]}if(r&&r.status!=='pending'){draw();clearInterval(window._pendTimer)}},1200)}
-window.activatePending=function(){var r=null;var i;for(i=0;i<DB.requests.length;i++){if(DB.requests[i].id===_pendId)r=DB.requests[i]}if(r&&r.code)activateCode(r.code,r.name)};
-function activateCode(code,name){var c=null;var i;for(i=0;i<DB.codes.length;i++){if(DB.codes[i].code===code)c=DB.codes[i]}
-if(!c){toast('Code inconnu','bad');return}if(c.status==='revoked'){toast('Code révoqué','bad');return}
-setSession({role:'user',code:code,name:name||c.name});var u=null;for(i=0;i<DB.users.length;i++){if(DB.users[i].code===code)u=DB.users[i]}
-if(!u)DB.users.push({id:uid(),code:code,name:name||c.name,date:iso(),status:'active'});save();toast('Accès activé','ok');enterApp()}
-function logout(){setSession(null);renderNav();show('s-login')}
-function enterApp(){renderNav();show('s-new')}
-/* --- acces admin (index-based) --- */
+$('#pend-body').innerHTML=h};
+draw();
+window._pendTimer=setInterval(function(){var r=null;var i;
+for(i=0;i<DB.requests.length;i++){if(DB.requests[i].id===id)r=DB.requests[i]}
+if(r&&r.status!=='pending'){draw();clearInterval(window._pendTimer)}},1200)}
+/* --- acces admin --- */
 function rnd4(){return Math.random().toString(36).slice(2,6).toUpperCase()}
 var _reqs=[],_codes=[],_users=[];
-function renderAccess(){var pend=0;var i;for(i=0;i<DB.requests.length;i++){if(DB.requests[i].status==='pending')pend++}
+function renderAccess(){var pend=0;var i;
+for(i=0;i<DB.requests.length;i++){if(DB.requests[i].status==='pending')pend++}
 $('#pendCount').textContent=pend;
 _reqs=DB.requests.slice().reverse();_codes=DB.codes.slice().reverse();_users=DB.users.slice().reverse();
-var h='';for(i=0;i<_reqs.length;i++){var r=_reqs[i];var st=r.status==='pending'?'<span class="badge b-warn">Attente</span>':r.status==='approved'?'<span class="badge b-ok">Acceptée</span>':'<span class="badge b-bad">Refusée</span>';
-var act='';if(r.status==='pending'){act='<button class="btn sm ok" onclick="apReq('+i+')">✔</button> <button class="btn sm danger" onclick="dnReq('+i+')">✖</button>'}else if(r.status==='approved'){act='<span class="mono">'+r.code+'</span> <button class="btn sm danger" onclick="rvReq('+i+')">Révoquer</button>'}
+var h='';
+for(i=0;i<_reqs.length;i++){var r=_reqs[i];
+var st=r.status==='pending'?'<span class="badge b-warn">Attente</span>':r.status==='approved'?'<span class="badge b-ok">Acceptée</span>':'<span class="badge b-bad">Refusée</span>';
+var act='';
+if(r.status==='pending'){act='<button class="btn sm ok" onclick="apReq('+i+')">✔</button> <button class="btn sm danger" onclick="dnReq('+i+')">✖</button>'}
+else if(r.status==='approved'){act='<span class="mono">'+r.code+'</span> <button class="btn sm danger" onclick="rvReq('+i+')">Révoquer</button>'}
 h+='<div class="hist-item" style="cursor:default"><div><b>'+esc(r.name)+'</b> '+st+'<br><span class="sub">'+esc(r.contact||'')+'</span></div><div style="text-align:right">'+act+'</div></div>'}
 $('#reqList').innerHTML=h||'<p class="sub">Aucune demande.</p>';
-h='';for(i=0;i<_codes.length;i++){var c=_codes[i];
+h='';
+for(i=0;i<_codes.length;i++){var c=_codes[i];
 h+='<div class="hist-item" style="cursor:default"><div><span class="mono">'+c.code+'</span> — '+esc(c.name||'')+'<br><span class="sub">'+(c.status==='active'?'<span class="badge b-ok">Actif</span>':'<span class="badge b-bad">Révoqué</span>')+'</span></div><div>'+(c.status==='active'?'<button class="btn sm danger" onclick="rvCode('+i+')">Révoquer</button>':'<button class="btn sm sec" onclick="rsCode('+i+')">Réactiver</button>')+'</div></div>'}
 $('#codeList').innerHTML=h||'<p class="sub">Aucun code.</p>';
-h='';for(i=0;i<_users.length;i++){var u=_users[i];
+h='';
+for(i=0;i<_users.length;i++){var u=_users[i];
 h+='<div class="hist-item" style="cursor:default"><div><b>'+esc(u.name)+'</b><br><span class="sub">'+u.code+'</span></div><div>'+(u.status==='active'?'<button class="btn sm danger" onclick="blUser('+i+')">Bloquer</button>':'<button class="btn sm sec" onclick="ubUser('+i+')">Débloquer</button>')+'</div></div>'}
 $('#userList').innerHTML=h||'<p class="sub">Aucun utilisateur.</p>'}
 window.apReq=function(i){var r=_reqs[i];if(!r)return;var code='AL-'+rnd4()+'-'+rnd4();r.status='approved';r.code=code;DB.codes.push({code:code,name:r.name,date:iso(),status:'active'});save();toast('Code : '+code,'ok');notify('Demande acceptée',r.name);renderAccess()};
 window.dnReq=function(i){var r=_reqs[i];if(r)r.status='denied';save();renderAccess()};
-window.rvReq=function(i){var r=_reqs[i];if(!r)return;r.status='denied';var j;for(j=0;j<DB.codes.length;j++){if(DB.codes[j].code===r.code)DB.codes[j].status='revoked'}for(j=0;j<DB.users.length;j++){if(DB.users[j].code===r.code)DB.users[j].status='blocked'}save();toast('Révoqué','warn');renderAccess()};
-window.rvCode=function(i){var c=_codes[i];if(c)c.status='revoked';var j;for(j=0;j<DB.users.length;j++){if(DB.users[j].code===c.code)DB.users[j].status='blocked'}save();renderAccess()};
-window.rsCode=function(i){var c=_codes[i];if(c)c.status='active';var j;for(j=0;j<DB.users.length;j++){if(DB.users[j].code===c.code)DB.users[j].status='active'}save();renderAccess()};
-window.blUser=function(i){var u=_users[i];if(u)u.status='blocked';var j;for(j=0;j<DB.codes.length;j++){if(DB.codes[j].code===u.code)DB.codes[j].status='revoked'}save();renderAccess()};
-window.ubUser=function(i){var u=_users[i];if(u)u.status='active';var j;for(j=0;j<DB.codes.length;j++){if(DB.codes[j].code===u.code)DB.codes[j].status='active'}save();renderAccess()};
+window.rvReq=function(i){var r=_reqs[i];if(!r)return;r.status='denied';var j;
+for(j=0;j<DB.codes.length;j++){if(DB.codes[j].code===r.code)DB.codes[j].status='revoked'}
+for(j=0;j<DB.users.length;j++){if(DB.users[j].code===r.code)DB.users[j].status='blocked'}
+save();toast('Révoqué','warn');renderAccess()};
+window.rvCode=function(i){var c=_codes[i];if(c)c.status='revoked';var j;
+for(j=0;j<DB.users.length;j++){if(DB.users[j].code===c.code)DB.users[j].status='blocked'}
+save();renderAccess()};
+window.rsCode=function(i){var c=_codes[i];if(c)c.status='active';var j;
+for(j=0;j<DB.users.length;j++){if(DB.users[j].code===c.code)DB.users[j].status='active'}
+save();renderAccess()};
+window.blUser=function(i){var u=_users[i];if(u)u.status='blocked';var j;
+for(j=0;j<DB.codes.length;j++){if(DB.codes[j].code===u.code)DB.codes[j].status='revoked'}
+save();renderAccess()};
+window.ubUser=function(i){var u=_users[i];if(u)u.status='active';var j;
+for(j=0;j<DB.codes.length;j++){if(DB.codes[j].code===u.code)DB.codes[j].status='active'}
+save();renderAccess()};
 /* --- selects --- */
-function fillBrands(sel,withFree){var h='<option value="">— Marque —</option>';var ks=Object.keys(KB).sort();var i;for(i=0;i<ks.length;i++){h+='<option>'+ks[i]+'</option>'}if(withFree)h+='<option value="__autre">Autre (libre)</option>';sel.innerHTML=h}
-function fillModels(b,sel,withFree){var B=KB[b];sel.disabled=!B;var h='<option value="">— Modèle —</option>';if(B){var ks=Object.keys(B.m).sort();var i;for(i=0;i<ks.length;i++){h+='<option>'+ks[i]+'</option>'}}if(withFree)h+='<option value="__autre">Autre (libre)</option>';sel.innerHTML=h}
-function fillEngines(b,m,sel,withFree){var list=(KB[b]&&KB[b].m[m])||[];sel.disabled=!list.length;var h='<option value="">— Motorisation —</option>';var i;for(i=0;i<list.length;i++){var e=KB[b].e[list[i]];if(!e)continue;h+='<option value="'+list[i]+'">'+esc(e.n)+' — '+e.f+' · '+FIAB[e.b]+'</option>'}if(withFree)h+='<option value="__autre">Autre (libre)</option>';sel.innerHTML=h}
+function fillBrands(sel,withFree){var h='<option value="">— Marque —</option>';var ks=Object.keys(KB).sort();var i;
+for(i=0;i<ks.length;i++){h+='<option>'+ks[i]+'</option>'}
+if(withFree)h+='<option value="__autre">Autre (libre)</option>';
+sel.innerHTML=h}
+function fillModels(b,sel,withFree){var B=KB[b];sel.disabled=!B;var h='<option value="">— Modèle —</option>';
+if(B){var ks=Object.keys(B.m).sort();var i;for(i=0;i<ks.length;i++){h+='<option>'+ks[i]+'</option>'}}
+if(withFree)h+='<option value="__autre">Autre (libre)</option>';
+sel.innerHTML=h}
+function fillEngines(b,m,sel,withFree){var list=(KB[b]&&KB[b].m[m])||[];sel.disabled=!list.length;var h='<option value="">— Motorisation —</option>';var i;
+for(i=0;i<list.length;i++){var e=KB[b].e[list[i]];if(!e)continue;h+='<option value="'+list[i]+'">'+esc(e.n)+' — '+e.f+' · '+FIAB[e.b]+'</option>'}
+if(withFree)h+='<option value="__autre">Autre (libre)</option>';
+sel.innerHTML=h}
 /* --- bibliotheque --- */
 var _libRes=[];
-$('#lib-q').addEventListener('input',function(){var q=norm(v('lib-q'));var out=$('#lib-search-res');if(q.length<2){out.innerHTML='';return}
-_libRes=[];var b,m,i;for(b in KB){var B=KB[b];for(m in B.m){for(i=0;i<B.m[m].length;i++){var k=B.m[m][i];var e=B.e[k];if(!e)continue;if(norm(b+' '+m+' '+e.n).indexOf(q)>=0)_libRes.push({b:b,m:m,k:k})}}}
-var h='';if(_libRes.length){h='<div class="card"><h3>Résultats ('+_libRes.length+')</h3>';var n=Math.min(30,_libRes.length);for(i=0;i<n;i++){var r=_libRes[i];h+='<div class="hist-item" onclick="libPick('+i+')"><div><b>'+esc(r.b)+' '+esc(r.m)+'</b><br><span class="sub">'+esc(KB[r.b].e[r.k].n)+'</span></div><span class="badge b-info">Voir</span></div>'}h+='</div>'}else{h='<div class="card"><p class="sub">Aucun résultat.</p></div>'}
-out.innerHTML=h});
-window.libPick=function(i){var r=_libRes[i];if(!r)return;$('#lib-b').value=r.b;fillModels(r.b,$('#lib-m'),false);$('#lib-m').value=r.m;fillEngines(r.b,r.m,$('#lib-e'),false);$('#lib-e').value=r.k;libShow(r.b,r.m,r.k);$('#lib-search-res').innerHTML='';$('#lib-q').value=''};
-$('#lib-b').onchange=function(){var b=$('#lib-b').value;fillModels(b,$('#lib-m'),false);$('#lib-e').disabled=true;$('#lib-e').innerHTML='<option value="">— Motorisation —</option>';$('#lib-out').innerHTML=b?takataBanner(b):''};
-$('#lib-m').onchange=function(){fillEngines($('#lib-b').value,$('#lib-m').value,$('#lib-e'),false);$('#lib-out').innerHTML=''};
-$('#lib-e').onchange=function(){var k=$('#lib-e').value;if(k)libShow($('#lib-b').value,$('#lib-m').value,k)};
-function takataBanner(b){var found=false;var i;for(i=0;i<TAKATA.length;i++){if(norm(TAKATA[i])===norm(b))found=true}if(!found)return '';
+window.libPick=function(i){var r=_libRes[i];if(!r)return;
+$('#lib-b').value=r.b;fillModels(r.b,$('#lib-m'),false);$('#lib-m').value=r.m;fillEngines(r.b,r.m,$('#lib-e'),false);$('#lib-e').value=r.k;libShow(r.b,r.m,r.k);$('#lib-search-res').innerHTML='';$('#lib-q').value=''};
+function takataBanner(b){var found=false;var i;
+for(i=0;i<TAKATA.length;i++){if(norm(TAKATA[i])===norm(b))found=true}
+if(!found)return '';
 return '<div class="banner red">🚨 Marque concernée par les rappels airbags <b>Takata</b> — VIN prioritaire.</div>'}
-function issueHtml(id){var i=ISS[id];if(!i)return '';var cls=i.s===3?'':(i.s===2?' lv2':' lv1');
+function issueHtml(id){var i=ISS[id];if(!i)return '';
+var cls=i.s===3?'':(i.s===2?' lv2':' lv1');
 return '<div class="issue'+cls+'"><div class="head"><b>'+esc(i.t)+'</b><span class="badge '+(i.s===3?'b-bad':i.s===2?'b-warn':'b-info')+'">'+(i.s===3?'CRITIQUE':i.s===2?'IMPORTANT':'MINEUR')+'</span></div><div class="sub">'+esc(i.d)+'</div><ul><li><b style="color:var(--tx)">Signes :</b> '+i.sg.map(esc).join(' · ')+'</li><li><b style="color:var(--tx)">Conséquences :</b> '+i.cs.map(esc).join(' · ')+'</li><li><b style="color:var(--tx)">Préconisation :</b> '+esc(i.fx)+'</li></ul></div>'}
-function recallHtml(id){var r=REC[id];if(!r)return '';return '<div class="issue" style="border-left-color:'+(r.u?'#ef4444':'#3b82f6')+'"><div class="head"><b>📣 '+esc(r.n)+'</b><span class="badge '+(r.u?'b-bad':'b-info')+'">'+(r.u?'URGENT':'CAMPAGNE')+'</span></div><div class="sub">'+esc(r.t)+' · Période : '+esc(r.y)+'</div></div>'}
-function libShow(b,m,k){var e=KB[b]&&KB[b].e[k];if(!e)return;var q=encodeURIComponent(b+' '+m);
+function recallHtml(id){var r=REC[id];if(!r)return '';
+return '<div class="issue" style="border-left-color:'+(r.u?'#ef4444':'#3b82f6')+'"><div class="head"><b>📣 '+esc(r.n)+'</b><span class="badge '+(r.u?'b-bad':'b-info')+'">'+(r.u?'URGENT':'CAMPAGNE')+'</span></div><div class="sub">'+esc(r.t)+' · Période : '+esc(r.y)+'</div></div>'}
+function libShow(b,m,k){var e=KB[b]&&KB[b].e[k];if(!e)return;
+var q=encodeURIComponent(b+' '+m);
 var h=takataBanner(b);
 h+='<div class="card"><h3>'+esc(b)+' '+esc(m)+' — '+esc(e.n)+'</h3><div class="chips"><span class="chip">⛽ '+e.f+'</span><span class="chip">Fiabilité : '+FIAB[e.b]+'</span></div>'+(e.i.length?'':'<p class="sub" style="margin-top:8px">✅ Aucun défaut majeur documenté.</p>')+'</div>';
 if(e.i.length){h+='<div class="card"><h3>⚠️ Défauts récurrents</h3>';var i;for(i=0;i<e.i.length;i++){h+=issueHtml(e.i[i])}h+='</div>'}
@@ -547,11 +588,10 @@ if(e.r.length){h+='<div class="card"><h3>📣 Rappels associés</h3>';var j;for(
 h+='<div class="card src"><h3>🔗 Vérifications</h3><div class="chips"><span class="chip"><a href="https://www.nhtsa.gov/recalls" target="_blank" rel="noopener">NHTSA</a></span><span class="chip"><a href="https://rappels-produits.gouv.fr/recherche?q='+q+'" target="_blank" rel="noopener">Rappel Conso</a></span><span class="chip"><a href="https://ec.europa.eu/safety-gate" target="_blank" rel="noopener">Safety Gate</a></span></div></div>';
 $('#lib-out').innerHTML=h}
 /* --- formulaire --- */
-$('#f-b').onchange=function(){var b=$('#f-b').value;$('#fb-x').style.display=(b==='__autre')?'block':'none';if(b&&b!=='__autre'){fillModels(b,$('#f-mo'),true)}else{$('#f-mo').disabled=true;$('#f-mo').innerHTML='<option value="">— Modèle —</option>'}$('#f-en').disabled=true;$('#f-en').innerHTML='<option value="">— Motorisation —</option>';kbHint()};
-$('#f-mo').onchange=function(){var b=$('#f-b').value;var m=$('#f-mo').value;$('#fm-x').style.display=(m==='__autre')?'block':'none';if(b&&b!=='__autre'&&m&&m!=='__autre'){fillEngines(b,m,$('#f-en'),true)}else{$('#f-en').disabled=true;$('#f-en').innerHTML='<option value="">— Motorisation —</option>'}kbHint()};
-$('#f-en').onchange=function(){$('#fe-x').style.display=($('#f-en').value==='__autre')?'block':'none';kbHint()};
 function kbHint(){var b=$('#f-b').value,m=$('#f-mo').value,k=$('#f-en').value;var h=$('#kb-hint');
-if(b&&b!=='__autre'&&m&&m!=='__autre'&&k&&k!=='__autre'&&KB[b]&&KB[b].e[k]){var e=KB[b].e[k];h.innerHTML='<div class="banner blue">✔ Base locale : '+e.i.length+' défaut(s) · '+e.r.length+' rappel(s) pour <b>'+esc(e.n)+'</b> — intégrés au rapport.</div>'}else{h.innerHTML=''}}
+if(b&&b!=='__autre'&&m&&m!=='__autre'&&k&&k!=='__autre'&&KB[b]&&KB[b].e[k]){var e=KB[b].e[k];
+h.innerHTML='<div class="banner blue">✔ Base locale : '+e.i.length+' défaut(s) · '+e.r.length+' rappel(s) pour <b>'+esc(e.n)+'</b> — intégrés au rapport.</div>'}
+else{h.innerHTML=''}}
 /* --- IA --- */
 var FREE_MODELS=['openai','mistral','deepseek','llama','qwen-coder','gemini'];
 function tSignal(ms){try{return AbortSignal.timeout?AbortSignal.timeout(ms):undefined}catch(e){return undefined}}
@@ -569,19 +609,28 @@ function nhtsaFetch(d){if(!d.marque||!d.modele||!d.annee||!navigator.onLine)retu
 return fetch('https://api.nhtsa.gov/recalls/recallsByVehicle?make='+encodeURIComponent(d.marque)+'&model='+encodeURIComponent(d.modele)+'&model_year='+encodeURIComponent(d.annee),{signal:tSignal(12000)}).then(function(r){if(!r.ok)return null;return r.json()}).then(function(j){var out=[];var res=(j&&j.results)||[];var i;for(i=0;i<Math.min(6,res.length);i++){out.push({comp:res[i].Component,summary:String(res[i].Summary||'').slice(0,260)})}return out}).catch(function(){return null})}
 /* --- moteur local --- */
 function analyzeDTC(input){var out=[];var codes=String(input||'').toUpperCase().match(/[PBCU][0-9]{4}/g)||[];var i,j;
-for(i=0;i<codes.length;i++){var c=codes[i];var dup=false;for(j=0;j<out.length;j++){if(out[j].code===c)dup=true}if(dup)continue;var e=DTC_DB[c];var o;
-if(e){o={code:c,d:e.d,c:e.c,k:e.k,s:e.s,known:true}}else{var fam={P:'motopropulseur',B:'carrosserie',C:'châssis',U:'réseau'}[c.charAt(0)]||'?';o={code:c,d:'Code '+c+' — système '+fam,c:['Documentation constructeur'],k:['À confirmer'],s:1,known:false}}
-out.push(o)}return out}
-function matchSymptoms(t){var n=norm(t);return SYMPTOMS.filter(function(s){var i;for(i=0;i<s.m.length;i++){if(n.indexOf(norm(s.m[i]))>=0)return true}return false})}
+for(i=0;i<codes.length;i++){var c=codes[i];var dup=false;
+for(j=0;j<out.length;j++){if(out[j].code===c)dup=true}
+if(dup)continue;var e=DTC_DB[c];var o;
+if(e){o={code:c,d:e.d,c:e.c,k:e.k,s:e.s,known:true}}
+else{var fam={P:'motopropulseur',B:'carrosserie',C:'châssis',U:'réseau'}[c.charAt(0)]||'?';o={code:c,d:'Code '+c+' — système '+fam,c:['Documentation constructeur'],k:['À confirmer'],s:1,known:false}}
+out.push(o)}
+return out}
+function matchSymptoms(t){var n=norm(t);
+return SYMPTOMS.filter(function(s){var i;for(i=0;i<s.m.length;i++){if(n.indexOf(norm(s.m[i]))>=0)return true}return false})}
 function scanKB(txt){var t=norm(txt);var out=[];if(!t)return out;var b,m,i;
 for(b in KB){if(t.indexOf(norm(b))<0)continue;var B=KB[b];
-for(m in B.m){for(i=0;i<B.m[m].length;i++){var k=B.m[m][i];var e=B.e[k];if(!e)continue;var words=norm(e.n).split(/[\s()\/,]+/);var w;for(w=0;w<words.length;w++){if(words[w].length>2&&words[w]!=='ch'&&words[w]!=='essence'&&words[w]!=='diesel'&&t.indexOf(words[w])>=0){out.push({b:b,m:m,k:k});break}}}}}
+for(m in B.m){for(i=0;i<B.m[m].length;i++){var k=B.m[m][i];var e=B.e[k];if(!e)continue;
+var words=norm(e.n).split(/[\s()\/,]+/);var w;
+for(w=0;w<words.length;w++){if(words[w].length>2&&words[w]!=='ch'&&words[w]!=='essence'&&words[w]!=='diesel'&&t.indexOf(words[w])>=0){out.push({b:b,m:m,k:k});break}}}}}
 return out.slice(0,6)}
 function legalEngine(d){var p=d.parties,f=d.faits,arts=[],liab=[],notes=[];var i;
-function has(x){return p.indexOf(x)>=0}function fact(x){return f.indexOf(x)>=0}
+function has(x){return p.indexOf(x)>=0}
+function fact(x){return f.indexOf(x)>=0}
 var sale=false;for(i=0;i<p.length;i++){if(p[i].indexOf('Vendeur')>=0)sale=true}
 if(sale){arts.push('1641','1644','1648')}
-if(has('Vendeur professionnel')){arts.push('L217-3','L217-7','L217-8','1645');liab.push({who:'Vendeur professionnel',lv:fact('Défaut non signalé à la vente')?'Élevée':'Modérée',b:['Vices cachés : vendeur professionnel présumé connaître les vices (1641, 1645 C. civ.)','Conformité : défauts présumés antérieurs 24/12 mois (L.217-7 C. conso)','Délivrance conforme (1604, 1104 C. civ.)']})}
+if(has('Vendeur professionnel')){arts.push('L217-3','L217-7','L217-8','1645');
+liab.push({who:'Vendeur professionnel',lv:fact('Défaut non signalé à la vente')?'Élevée':'Modérée',b:['Vices cachés : vendeur professionnel présumé connaître les vices (1641, 1645 C. civ.)','Conformité : défauts présumés antérieurs 24/12 mois (L.217-7 C. conso)','Délivrance conforme (1604, 1104 C. civ.)']})}
 if(has('Vendeur particulier')){liab.push({who:'Vendeur particulier',lv:fact('Défaut non signalé à la vente')?'Modérée':'Faible',b:['Vices cachés (1641) sans présomption : preuve à la charge de l\u2019acheteur']})}
 if(has('Garage / réparateur')){liab.push({who:'Garage / réparateur',lv:(fact('Intervention garage récente inefficace')||fact('Panne récurrente déjà réparée'))?'Élevée':'À établir',b:['Obligation de résultat sur la réparation (1231-1 C. civ.)','Devoir de conseil/diagnostic']})}
 if(has('Constructeur / importateur')){liab.push({who:'Constructeur / importateur',lv:fact('Rappel non réalisé')?'Élevée':'Modérée',b:['Produits défectueux (1245 s. C. civ.)','Rappels gratuits (Règl. UE 2023/988)']})}
@@ -604,82 +653,86 @@ a.push('Conciliateur / médiateur consommation (L.611-1).');
 a.push('Expertise amiable ou référé-expertise (145 CPC).');
 a.push('Tribunal ; ≤ 5000 € tentative amiable obligatoire (750-1 CPC).');
 if(d.faits.indexOf('Kilométrage suspect')>=0)a.push('Plainte 313-1 + SignalConso.');
-a.push('Protection juridique assurance.');return a}
+a.push('Protection juridique assurance.');
+return a}
 /* --- rapport --- */
-function mdLite(s){var h=esc(s);h=h.replace(/^###?\s?(.*)$/gm,'<h4>$1</h4>').replace(/\*\*(.+?)\*\*/g,'<b>$1</b>');
-var lines=h.split('\n');var i;for(i=0;i<lines.length;i++){if(/^\s*[-•]\s+/.test(lines[i])){lines[i]='<li>'+lines[i].replace(/^\s*[-•]\s+/,'')+'</li>'}}
-h=lines.join('\n');h=h.replace(/((<li>[\s\S]*?<\/li>\n?)+)/g,'<ul>$1</ul>');h=h.replace(/\n{2,}/g,'</p><p>').replace(/\n/g,'<br>');return '<p>'+h+'</p>'}
+function mdLite(s){var h=esc(s);
+h=h.replace(/^###?\s?(.*)$/gm,'<h4>$1</h4>').replace(/\*\*(.+?)\*\*/g,'<b>$1</b>');
+var lines=h.split('\n');var i;
+for(i=0;i<lines.length;i++){if(/^\s*[-•]\s+/.test(lines[i])){lines[i]='<li>'+lines[i].replace(/^\s*[-•]\s+/,'')+'</li>'}}
+h=lines.join('\n');
+h=h.replace(/((<li>[\s\S]*?<\/li>\n?)+)/g,'<ul>$1</ul>');
+h=h.replace(/\n{2,}/g,'</p><p>').replace(/\n/g,'<br>');
+return '<p>'+h+'</p>'}
 function buildReport(d,kbE,ai,nhtsa){
 var dtcs=analyzeDTC(d.dtc),symps=matchSymptoms(d.symptomes),legal=legalEngine(d),actions=actionsBuilder(d);
-var html='';var txt='RAPPORT AUTOLITIGE v2.3 — '+new Date().toLocaleString('fr-FR')+'\n';
+var html='';var txt='RAPPORT AUTOLITIGE v2.4 — '+new Date().toLocaleString('fr-FR')+'\n';
 function sec(t,icon,bh,bt){html+='<div class="sec-title">'+(IC[icon]||'')+' '+t+'</div><div class="card">'+bh+'</div>';txt+='\n### '+t+'\n'+bt+'\n'}
 sec('Contexte','car','<div class="kv"><span>Véhicule</span><b>'+esc(d.marque)+' '+esc(d.modele)+' '+esc(d.annee)+'</b></div><div class="kv"><span>Moteur</span><b>'+esc(d.motor||'—')+'</b></div><div class="kv"><span>Km</span><b>'+esc(d.km||'—')+'</b></div><div class="kv"><span>Achat</span><b>'+esc(d.achat)+'</b></div><div class="kv"><span>Symptômes</span><b style="text-align:left;font-weight:400">'+esc(d.symptomes)+'</b></div>','Véhicule : '+d.marque+' '+d.modele+' '+d.annee+' '+d.motor+'\nSymptômes : '+d.symptomes);
-if(kbE.length){var kh='';var i;for(i=0;i<kbE.length;i++){var k=kbE[i];kh+='<p><b>'+esc(k.b)+' '+esc(k.m)+' — '+esc(k.e.n)+'</b> <span class="badge b-mut">'+FIAB[k.e.b]+'</span></p>';var j;for(j=0;j<k.e.i.length;j++){kh+=issueHtml(k.e.i[j])}}
-var kr=[];for(i=0;i<kbE.length;i++){for(var j2=0;j2<kbE[i].e.r.length;j2++){if(kr.indexOf(kbE[i].e.r[j2])<0)kr.push(kbE[i].e.r[j2])}}
+if(kbE.length){var kh='';var i,j;
+for(i=0;i<kbE.length;i++){var k=kbE[i];
+kh+='<p><b>'+esc(k.b)+' '+esc(k.m)+' — '+esc(k.e.n)+'</b> <span class="badge b-mut">'+FIAB[k.e.b]+'</span></p>';
+for(j=0;j<k.e.i.length;j++){kh+=issueHtml(k.e.i[j])}}
+var kr=[];
+for(i=0;i<kbE.length;i++){for(j=0;j<kbE[i].e.r.length;j++){if(kr.indexOf(kbE[i].e.r[j])<0)kr.push(kbE[i].e.r[j])}}
 var rh='';for(i=0;i<kr.length;i++){rh+=recallHtml(kr[i])}
 sec('Cas connus de la motorisation','warn',kh+'<h4>📣 Rappels associés</h4>'+(rh||'<p class="sub">Aucun — vérifier VIN.</p>'),'Cas connus et rappels intégrés depuis la base locale.')}
-if(dtcs.length){var dh='';var t2='';var i3;for(i3=0;i3<dtcs.length;i3++){var c=dtcs[i3];dh+='<div style="margin-bottom:10px"><b>'+c.code+'</b> <span class="badge '+(c.s===3?'b-bad':c.s===2?'b-warn':'b-info')+'">'+(c.s===3?'CRITIQUE':c.s===2?'IMPORTANT':'MINEUR')+'</span><div class="sub">'+esc(c.d)+' · Origines : '+c.c.map(esc).join(' · ')+'</div></div>';t2+=c.code+' : '+c.d+'\n'}
+if(dtcs.length){var dh='';var t2='';var i3;
+for(i3=0;i3<dtcs.length;i3++){var c=dtcs[i3];
+dh+='<div style="margin-bottom:10px"><b>'+c.code+'</b> <span class="badge '+(c.s===3?'b-bad':c.s===2?'b-warn':'b-info')+'">'+(c.s===3?'CRITIQUE':c.s===2?'IMPORTANT':'MINEUR')+'</span><div class="sub">'+esc(c.d)+' · Origines : '+c.c.map(esc).join(' · ')+'</div></div>';
+t2+=c.code+' : '+c.d+'\n'}
 sec('Codes DTC','dtc',dh,t2)}
-var orig=[];var push=function(o){var i;for(i=0;i<orig.length;i++){if(orig[i].t===o.t)return}orig.push(o)};
-var a1;for(a1=0;a1<kbE.length;a1++){var kk=kbE[a1];var b1;for(b1=0;b1<kk.e.i.length;b1++){var ii=ISS[kk.e.i[b1]];push({t:ii.t,d:ii.d,src:'Cas connu motorisation',s:ii.s})}}
-var s1;for(s1=0;s1<symps.length;s1++){push({t:symps[s1].t,d:symps[s1].o.join(' ; '),src:'Symptômes',s:symps[s1].s})}
-var c1;for(c1=0;c1<dtcs.length;c1++){var d1=dtcs[c1];var e1;for(e1=0;e1<d1.c.length;e1++){push({t:d1.c[e1],d:d1.d,src:'DTC '+d1.code,s:d1.s})}}
+var orig=[];
+function push(o){var i;for(i=0;i<orig.length;i++){if(orig[i].t===o.t)return}orig.push(o)}
+var a1,b1,q1;
+for(a1=0;a1<kbE.length;a1++){for(b1=0;b1<kbE[a1].e.i.length;b1++){var ii=ISS[kbE[a1].e.i[b1]];push({t:ii.t,d:ii.d,src:'Cas connu motorisation',s:ii.s})}}
+for(a1=0;a1<symps.length;a1++){push({t:symps[a1].t,d:symps[a1].o.join(' ; '),src:'Symptômes',s:symps[a1].s})}
+for(a1=0;a1<dtcs.length;a1++){var dd=dtcs[a1];for(b1=0;b1<dd.c.length;b1++){push({t:dd.c[b1],d:dd.d,src:'DTC '+dd.code,s:dd.s})}}
 orig.sort(function(x,y){return y.s-x.s});
-var oh='';var ot='';var o1;for(o1=0;o1<orig.length;o1++){oh+='<p><b>▸ '+esc(orig[o1].t)+'</b> <span class="badge b-mut">'+orig[o1].src+'</span><br><span class="sub">'+esc(orig[o1].d)+'</span></p>';ot+='- '+orig[o1].t+' ('+orig[o1].src+')\n'}
+var oh='';var ot='';
+for(a1=0;a1<orig.length;a1++){oh+='<p><b>▸ '+esc(orig[a1].t)+'</b> <span class="badge b-mut">'+orig[a1].src+'</span><br><span class="sub">'+esc(orig[a1].d)+'</span></p>';ot+='- '+orig[a1].t+' ('+orig[a1].src+')\n'}
 sec('Origines probables','warn',oh||'<p class="sub">Aucune correspondance locale.</p>',ot);
-var cons=[];var pc=function(x){if(cons.indexOf(x)<0)cons.push(x)};
-for(a1=0;a1<kbE.length;a1++){for(b1=0;b1<kbE[a1].e.i.length;b1++){var ii2=ISS[kbE[a1].e.i[b1]];var q1;for(q1=0;q1<ii2.cs.length;q1++){pc(ii2.cs[q1])}}}
-for(s1=0;s1<symps.length;s1++){for(q1=0;q1<symps[s1].k.length;q1++){pc(symps[s1].k[q1])}}
-for(c1=0;c1<dtcs.length;c1++){for(q1=0;q1<dtcs[c1].k.length;q1++){pc(dtcs[c1].k[q1])}}
-var ch='';var ct='';for(q1=0;q1<cons.length;q1++){ch+='<li>'+esc(cons[q1])+'</li>';ct+='- '+cons[q1]+'\n'}
+var cons=[];
+function pc(x){if(cons.indexOf(x)<0)cons.push(x)}
+for(a1=0;a1<kbE.length;a1++){for(b1=0;b1<kbE[a1].e.i.length;b1++){var ii2=ISS[kbE[a1].e.i[b1]];for(q1=0;q1<ii2.cs.length;q1++){pc(ii2.cs[q1])}}}
+for(a1=0;a1<symps.length;a1++){for(q1=0;q1<symps[a1].k.length;q1++){pc(symps[a1].k[q1])}}
+for(a1=0;a1<dtcs.length;a1++){for(q1=0;q1<dtcs[a1].k.length;q1++){pc(dtcs[a1].k[q1])}}
+var ch='';var ct='';
+for(q1=0;q1<cons.length;q1++){ch+='<li>'+esc(cons[q1])+'</li>';ct+='- '+cons[q1]+'\n'}
 sec('Conséquences','car',ch?'<ul>'+ch+'</ul>':'<p class="sub">À préciser.</p>',ct);
-var rh2='';var i4;for(i4=0;i4<kbE.length;i4++){var j4;for(j4=0;j4<kbE[i4].e.r.length;j4++){rh2+=recallHtml(kbE[i4].e.r[j4])}}
-var tak=false;for(i4=0;i4<TAKATA.length;i4++){if(norm(TAKATA[i4])===norm(d.marque))tak=true}
+var rh2='';var i4,j4;
+for(i4=0;i4<kbE.length;i4++){for(j4=0;j4<kbE[i4].e.r.length;j4++){rh2+=recallHtml(kbE[i4].e.r[j4])}}
+var tak=false;
+for(i4=0;i4<TAKATA.length;i4++){if(norm(TAKATA[i4])===norm(d.marque))tak=true}
 if(tak){rh2+='<div class="banner red">🚨 Rappels Takata possibles sur cette marque — VIN prioritaire.</div>'+recallHtml('r-takata')}
-if(nhtsa&&nhtsa.length){rh2+='<h4>NHTSA (en ligne)</h4>';for(i4=0;i4<nhtsa.length;i4++){rh2+='<p class="sub"><b>'+esc(nhtsa[i4].comp)+'</b> — '+esc(nhtsa[i4].summary)+'</p>'}}
+if(nhtsa&&nhtsa.length){rh2+='<h4>NHTSA (en ligne)</h4>';
+for(i4=0;i4<nhtsa.length;i4++){rh2+='<p class="sub"><b>'+esc(nhtsa[i4].comp)+'</b> — '+esc(nhtsa[i4].summary)+'</p>'}}
 var qq=encodeURIComponent(d.marque+' '+d.modele);
 rh2+='<div class="chips src"><span class="chip"><a href="https://www.nhtsa.gov/recalls" target="_blank" rel="noopener">NHTSA</a></span><span class="chip"><a href="https://rappels-produits.gouv.fr/recherche?q='+qq+'" target="_blank" rel="noopener">Rappel Conso</a></span><span class="chip"><a href="https://ec.europa.eu/safety-gate" target="_blank" rel="noopener">Safety Gate</a></span></div>';
 sec('Rappels applicables','recall',rh2||'<p class="sub">Vérifier par VIN.</p>','Voir liens officiels.');
-var lh='';var i5;for(i5=0;i5<legal.arts.length;i5++){lh+='<p><b>'+esc(legal.arts[i5].r)+'</b><br><span class="sub">'+esc(legal.arts[i5].t)+'</span></p>'}
+var lh='';var i5;
+for(i5=0;i5<legal.arts.length;i5++){lh+='<p><b>'+esc(legal.arts[i5].r)+'</b><br><span class="sub">'+esc(legal.arts[i5].t)+'</span></p>'}
 sec('Fondements juridiques','gavel',lh,legal.arts.map(function(a){return '- '+a.r+' : '+a.t}).join('\n'));
-var lh2='';for(i5=0;i5<legal.liab.length;i5++){var L=legal.liab[i5];lh2+='<p><b>'+esc(L.who)+'</b> — <span class="badge '+(L.lv==='Élevée'?'b-bad':L.lv==='Modérée'?'b-warn':L.lv==='Faible'?'b-ok':'b-mut')+'">'+L.lv+'</span></p><ul>';var b2;for(b2=0;b2<L.b.length;b2++){lh2+='<li class="sub">'+esc(L.b[b2])+'</li>'}lh2+='</ul>'}
+var lh2='';
+for(i5=0;i5<legal.liab.length;i5++){var L=legal.liab[i5];
+lh2+='<p><b>'+esc(L.who)+'</b> — <span class="badge '+(L.lv==='Élevée'?'b-bad':L.lv==='Modérée'?'b-warn':L.lv==='Faible'?'b-ok':'b-mut')+'">'+L.lv+'</span></p><ul>';
+var b2;for(b2=0;b2<L.b.length;b2++){lh2+='<li class="sub">'+esc(L.b[b2])+'</li>'}
+lh2+='</ul>'}
 if(legal.notes.length){lh2+='<div class="sub">⚠ '+legal.notes.map(esc).join('<br>⚠ ')+'</div>'}
 sec('Responsabilités','gavel',lh2,legal.liab.map(function(l){return '- '+l.who+' ['+l.lv+']'}).join('\n'));
-var ah='';var i6;for(i6=0;i6<actions.length;i6++){ah+='<li class="sub">'+esc(actions[i6])+'</li>'}
+var ah='';var i6;
+for(i6=0;i6<actions.length;i6++){ah+='<li class="sub">'+esc(actions[i6])+'</li>'}
 sec('Stratégie','save','<ol style="padding-left:18px">'+ah+'</ol>',actions.map(function(a,i){return (i+1)+'. '+a}).join('\n'));
-var kbTxt='';for(i6=0;i6<kbE.length;i6++){kbTxt+=kbE[i6].b+' '+kbE[i6].m+' '+kbE[i6].e.n+' : '+(kbE[i6].e.i.length?kbE[i6].e.i.join(', '):'aucun défaut')+'\n'}
+var kbTxt='';
+for(i6=0;i6<kbE.length;i6++){kbTxt+=kbE[i6].b+' '+kbE[i6].m+' '+kbE[i6].e.n+' : '+(kbE[i6].e.i.length?kbE[i6].e.i.join(', '):'aucun défaut')+'\n'}
 d._kbTxt=kbTxt;
 if(ai){html+='<div class="sec-title">'+IC.brain+' IA <span class="badge b-info">'+esc(ai.model)+'</span></div><div class="card ai-box">'+mdLite(ai.text)+'</div>';txt+='\n### IA ('+ai.model+')\n'+ai.text}
 else{html+='<div class="sec-title">'+IC.brain+' IA</div><div class="card"><p class="sub">IA indisponible — base locale seule.</p></div>';txt+='\n### IA\nIndisponible.'}
 return{html:html,txt:txt,aiModel:ai?ai.model:'local'}}
-/* --- analyse --- */
-$('#btnAnalyze').onclick=function(){var bSel=$('#f-b').value,mSel=$('#f-mo').value,eSel=$('#f-en').value;
-var motor='';if(eSel==='__autre'){motor=v('f-ex')}else if(eSel&&bSel&&bSel!=='__autre'&&KB[bSel]&&KB[bSel].e[eSel]){motor=KB[bSel].e[eSel].n}else{motor=eSel}
-var d={marque:(bSel==='__autre')?v('f-bx'):bSel,modele:(mSel==='__autre')?v('f-mx'):mSel,motor:motor,annee:v('f-annee'),km:v('f-km'),achat:$('#f-achat').value,symptomes:v('f-symptomes'),dtc:v('f-dtc'),historique:v('f-historique'),parties:$$('input[name=parties]:checked').map(function(i){return i.value}),faits:$$('input[name=faits]:checked').map(function(i){return i.value})};
-if(!d.marque&&!d.symptomes){toast('Marque ou symptômes requis','warn');return}
-$('#btnAnalyze').disabled=true;$('#aiStatusCard').style.display='block';var stx=$('#aiStatus');
-var kbE=[];
-if(bSel&&bSel!=='__autre'&&mSel&&mSel!=='__autre'&&eSel&&eSel!=='__autre'&&KB[bSel]&&KB[bSel].e[eSel]){kbE=[{b:bSel,m:mSel,k:eSel,e:KB[bSel].e[eSel]}];stx.textContent='Base locale chargée ✔'}
-else{stx.textContent='Recherche base locale…';kbE=scanKB(d.marque+' '+d.modele+' '+d.motor+' '+d.symptomes).map(function(r){return{b:r.b,m:r.m,k:r.k,e:KB[r.b].e[r.k]}})}
-var ai=null;
-var finish=function(){stx.textContent='NHTSA…';
-nhtsaFetch(d).then(function(nhtsa){stx.textContent='Rapport…';
-var rep=buildReport(d,kbE,ai,nhtsa);
-DB.analyses.unshift({id:uid(),date:iso(),data:d,aiModel:rep.aiModel,html:rep.html,txt:rep.txt});save();
-$('#reportBox').innerHTML=rep.html;window._curRep=DB.analyses[0];
-$('#aiStatusCard').style.display='none';$('#btnAnalyze').disabled=false;show('s-report');toast('Analyse terminée','ok')})};
-if(DB.settings.aiOnline&&navigator.onLine){
-if(DB.settings.useGemini&&DB.settings.geminiKey){stx.textContent='Gemini…';callGemini(buildPrompt(d,''),DB.settings.geminiKey).then(function(a){ai=a;finish()})}
-else{runAIChain(d,function(i,m,n){stx.textContent='IA '+i+'/'+n+' : '+m}).then(function(a){ai=a;finish()})}}
-else{stx.textContent='Hors ligne → base locale.';finish()}};
-$('#rep-txt').onclick=function(){if(window._curRep)dl('rapport-autolitige.txt',window._curRep.txt,'text/plain;charset=utf-8')};
-$('#rep-print').onclick=function(){window.print()};
-$('#rep-share').onclick=function(){var r=window._curRep;if(!r)return;var body='Rapport AutoLitige — '+r.data.marque+' '+r.data.modele+'\n'+r.txt.slice(0,1800);
-if(navigator.share){navigator.share({title:'Rapport AutoLitige',text:body}).catch(function(){})}
-else if(navigator.clipboard){navigator.clipboard.writeText(body).then(function(){toast('Copié','ok')})}};
 /* --- historique --- */
 var _hist=[];
-function renderHistory(){_hist=DB.analyses;var h='';var i;for(i=0;i<_hist.length;i++){var a=_hist[i];
+function renderHistory(){_hist=DB.analyses;var h='';var i;
+for(i=0;i<_hist.length;i++){var a=_hist[i];
 h+='<div class="hist-item" onclick="openA('+i+')"><div><b>'+esc(a.data.marque)+' '+esc(a.data.modele)+'</b> <span class="badge b-info">'+esc(a.aiModel)+'</span><br><span class="sub">'+new Date(a.date).toLocaleString('fr-FR')+'</span></div><button class="btn sm danger" onclick="event.stopPropagation();delA('+i+')">✖</button></div>'}
 $('#histList').innerHTML=h||'<p class="sub">Aucune analyse.</p>'}
 window.openA=function(i){var a=_hist[i];if(!a)return;window._curRep=a;$('#reportBox').innerHTML=a.html;show('s-report')};
@@ -687,29 +740,113 @@ window.delA=function(i){var a=_hist[i];if(!a)return;DB.analyses=DB.analyses.filt
 /* --- reglages --- */
 function renderSettings(){$('#st-online').checked=DB.settings.aiOnline;$('#st-gem').checked=DB.settings.useGemini;$('#st-key').value=DB.settings.geminiKey||'';
 $('#bk-info').textContent='Sauvegarde : '+new Date(DB.savedAt).toLocaleString('fr-FR')+' · '+DB.analyses.length+' analyse(s)'}
+/* --- manifest & sw --- */
+var MANIFEST={name:'AutoLitige Expert v2.4',short_name:'AutoLitige',start_url:'./index.html',scope:'./',display:'standalone',orientation:'portrait',background_color:'#0b1220',theme_color:'#0b1220',lang:'fr',description:'Pannes connues, rappels, DTC, droit français. Hors ligne.',icons:[{src:'icon-192.png',sizes:'192x192',type:'image/png',purpose:'any'},{src:'icon-512.png',sizes:'512x512',type:'image/png',purpose:'any maskable'}]};
+var SW_SRC="var CACHE='autolitige-v3';\nself.addEventListener('install',function(e){e.waitUntil(caches.open(CACHE).then(function(c){return c.addAll(['./','./index.html','./manifest.webmanifest','./icon-192.png','./icon-512.png'])}).catch(function(){}));self.skipWaiting()});\nself.addEventListener('activate',function(e){e.waitUntil(caches.keys().then(function(ks){return Promise.all(ks.filter(function(k){return k!==CACHE}).map(function(k){return caches.delete(k)}))}));self.clients.claim()});\nvar NOCACHE=['api.nhtsa.gov','text.pollinations.ai','generativelanguage.googleapis.com','rappels-produits.gouv.fr'];\nself.addEventListener('fetch',function(e){var u=new URL(e.request.url);\nif(e.request.method!=='GET'||NOCACHE.some(function(h){return u.hostname.indexOf(h)>=0}))return;\ne.respondWith(caches.match(e.request).then(function(r){return r||fetch(e.request).then(function(res){if(res.ok&&u.origin===location.origin){var cp=res.clone();caches.open(CACHE).then(function(c){c.put(e.request,cp)})}return res}).catch(function(){return caches.match('./index.html')})}))});";
+/* --- init (tout le DOM ici) --- */
+function init(){
+$('#logoIco').innerHTML=LOGO_SVG;
+$('#logoBig').innerHTML='<div class="logo-big">'+LOGO_SVG+'</div>';
+$('#btnNotif').innerHTML=IC.bell;
+$('#btnLock').innerHTML=IC.lock;
+$('#modalBack').addEventListener('click',function(e){if(e.target.id==='modalBack')closeModal()});
+$('#btnLock').onclick=function(){if(sessionValid()){logout()}else{show('s-login')}};
+$('#btnNotif').onclick=function(){if(!('Notification' in window)){toast('Non supporté','warn');return}Notification.requestPermission().then(function(p){toast(p==='granted'?'Notifications OK':'Refusées',p==='granted'?'ok':'bad')})};
+$('#btnAdmin').onclick=function(){modal('<h3>🔐 Administrateur</h3><label>Mot de passe</label><input type="password" id="adm-pass"><button class="btn" id="adm-go">Valider</button><button class="btn sec" onclick="closeModal()">Annuler</button>');
+$('#adm-go').onclick=function(){if(v('adm-pass')===ADMIN_KEY){setSession({role:'admin'});closeModal();toast('Bienvenue','ok');enterApp()}else{toast('Mot de passe incorrect','bad')}}};
+$('#btnReq').onclick=function(){show('s-request')};
+$('#btnCode').onclick=function(){show('s-code')};
+$('#rq-send').onclick=function(){var n=v('rq-name');if(!n){toast('Nom requis','warn');return}
+DB.requests.push({id:uid(),name:n,contact:v('rq-contact'),motif:v('rq-motif'),date:iso(),status:'pending'});save();toast('Demande envoyée','ok');notify('Nouvelle demande d\u2019accès',n);showPending(DB.requests[DB.requests.length-1].id)};
+$('#code-go').onclick=function(){activateCode(v('code-in').toUpperCase(),v('code-name'))};
+$('#lib-q').addEventListener('input',function(){var q=norm(v('lib-q'));var out=$('#lib-search-res');
+if(q.length<2){out.innerHTML='';return}
+_libRes=[];var b,m,i;
+for(b in KB){var B=KB[b];
+for(m in B.m){for(i=0;i<B.m[m].length;i++){var k=B.m[m][i];var e=B.e[k];if(!e)continue;
+if(norm(b+' '+m+' '+e.n).indexOf(q)>=0)_libRes.push({b:b,m:m,k:k})}}}
+var h='';
+if(_libRes.length){h='<div class="card"><h3>Résultats ('+_libRes.length+')</h3>';
+var n=Math.min(30,_libRes.length);
+for(i=0;i<n;i++){var r=_libRes[i];
+h+='<div class="hist-item" onclick="libPick('+i+')"><div><b>'+esc(r.b)+' '+esc(r.m)+'</b><br><span class="sub">'+esc(KB[r.b].e[r.k].n)+'</span></div><span class="badge b-info">Voir</span></div>'}
+h+='</div>'}
+else{h='<div class="card"><p class="sub">Aucun résultat.</p></div>'}
+out.innerHTML=h});
+$('#lib-b').onchange=function(){var b=$('#lib-b').value;fillModels(b,$('#lib-m'),false);$('#lib-e').disabled=true;$('#lib-e').innerHTML='<option value="">— Motorisation —</option>';$('#lib-out').innerHTML=b?takataBanner(b):''};
+$('#lib-m').onchange=function(){fillEngines($('#lib-b').value,$('#lib-m').value,$('#lib-e'),false);$('#lib-out').innerHTML=''};
+$('#lib-e').onchange=function(){var k=$('#lib-e').value;if(k)libShow($('#lib-b').value,$('#lib-m').value,k)};
+$('#f-b').onchange=function(){var b=$('#f-b').value;$('#fb-x').style.display=(b==='__autre')?'block':'none';
+if(b&&b!=='__autre'){fillModels(b,$('#f-mo'),true)}else{$('#f-mo').disabled=true;$('#f-mo').innerHTML='<option value="">— Modèle —</option>'}
+$('#f-en').disabled=true;$('#f-en').innerHTML='<option value="">— Motorisation —</option>';kbHint()};
+$('#f-mo').onchange=function(){var b=$('#f-b').value;var m=$('#f-mo').value;$('#fm-x').style.display=(m==='__autre')?'block':'none';
+if(b&&b!=='__autre'&&m&&m!=='__autre'){fillEngines(b,m,$('#f-en'),true)}else{$('#f-en').disabled=true;$('#f-en').innerHTML='<option value="">— Motorisation —</option>'}
+kbHint()};
+$('#f-en').onchange=function(){$('#fe-x').style.display=($('#f-en').value==='__autre')?'block':'none';kbHint()};
+$('#btnAnalyze').onclick=function(){
+var bSel=$('#f-b').value;var mSel=$('#f-mo').value;var eSel=$('#f-en').value;
+var motor='';
+if(eSel==='__autre'){motor=v('f-ex')}
+else if(eSel&&bSel&&bSel!=='__autre'&&KB[bSel]&&KB[bSel].e[eSel]){motor=KB[bSel].e[eSel].n}
+else{motor=eSel}
+var d={marque:(bSel==='__autre')?v('f-bx'):bSel,modele:(mSel==='__autre')?v('f-mx'):mSel,motor:motor,annee:v('f-annee'),km:v('f-km'),achat:$('#f-achat').value,symptomes:v('f-symptomes'),dtc:v('f-dtc'),historique:v('f-historique'),parties:$$('input[name=parties]:checked').map(function(i){return i.value}),faits:$$('input[name=faits]:checked').map(function(i){return i.value})};
+if(!d.marque&&!d.symptomes){toast('Marque ou symptômes requis','warn');return}
+$('#btnAnalyze').disabled=true;$('#aiStatusCard').style.display='block';var stx=$('#aiStatus');
+var kbE=[];
+if(bSel&&bSel!=='__autre'&&mSel&&mSel!=='__autre'&&eSel&&eSel!=='__autre'&&KB[bSel]&&KB[bSel].e[eSel]){
+kbE=[{b:bSel,m:mSel,k:eSel,e:KB[bSel].e[eSel]}];stx.textContent='Base locale chargée'}
+else{stx.textContent='Recherche base locale…';
+var found=scanKB(d.marque+' '+d.modele+' '+d.motor+' '+d.symptomes);var i;
+for(i=0;i<found.length;i++){kbE.push({b:found[i].b,m:found[i].m,k:found[i].k,e:KB[found[i].b].e[found[i].k]})}}
+var ai=null;
+var finish=function(){stx.textContent='Rappels NHTSA…';
+nhtsaFetch(d).then(function(nhtsa){
+stx.textContent='Construction du rapport…';
+var rep=buildReport(d,kbE,ai,nhtsa);
+DB.analyses.unshift({id:uid(),date:iso(),data:d,aiModel:rep.aiModel,html:rep.html,txt:rep.txt});
+save();
+window._curRep=DB.analyses[0];
+$('#reportBox').innerHTML=rep.html;
+$('#aiStatusCard').style.display='none';
+$('#btnAnalyze').disabled=false;
+show('s-report');
+toast('Analyse terminée','ok')})};
+if(DB.settings.aiOnline&&navigator.onLine){
+if(DB.settings.useGemini&&DB.settings.geminiKey){stx.textContent='Gemini…';
+callGemini(buildPrompt(d,''),DB.settings.geminiKey).then(function(a){ai=a;finish()})}
+else{runAIChain(d,function(i,m,n){stx.textContent='IA '+i+'/'+n+' : '+m}).then(function(a){ai=a;finish()})}}
+else{stx.textContent='Hors ligne → base locale.';finish()}};
+$('#rep-txt').onclick=function(){if(window._curRep)dl('rapport-autolitige.txt',window._curRep.txt,'text/plain;charset=utf-8')};
+$('#rep-print').onclick=function(){window.print()};
+$('#rep-share').onclick=function(){var r=window._curRep;if(!r)return;
+var body='Rapport AutoLitige — '+r.data.marque+' '+r.data.modele+'\n'+r.txt.slice(0,1800);
+if(navigator.share){navigator.share({title:'Rapport AutoLitige',text:body}).catch(function(){})}
+else if(navigator.clipboard){navigator.clipboard.writeText(body).then(function(){toast('Copié','ok')})}};
 $('#st-save').onclick=function(){DB.settings.aiOnline=$('#st-online').checked;DB.settings.useGemini=$('#st-gem').checked;DB.settings.geminiKey=v('st-key');save();toast('Enregistré','ok')};
 $('#bk-exp').onclick=function(){dl('sauvegarde-autolitige.json',JSON.stringify(DB,null,1),'application/json')};
 $('#bk-imp').onclick=function(){$('#fileImport').click()};
-$('#fileImport').onchange=function(e){var f=e.target.files[0];if(!f)return;var rd=new FileReader();rd.onload=function(){try{var j=JSON.parse(rd.result);if(!j.requests||!j.codes)throw 0;DB=j;save();toast('Importé','ok');renderNav();enterApp()}catch(x){toast('Fichier invalide','bad')}};rd.readAsText(f);e.target.value=''};
+$('#fileImport').onchange=function(e){var f=e.target.files[0];if(!f)return;
+var rd=new FileReader();
+rd.onload=function(){try{var j=JSON.parse(rd.result);if(!j.requests||!j.codes)throw 0;DB=j;save();toast('Importé','ok');renderNav();enterApp()}catch(x){toast('Fichier invalide','bad')}};
+rd.readAsText(f);e.target.value=''};
 $('#bk-reset').onclick=function(){modal('<h3>🗑️ Reset ?</h3><button class="btn danger" id="rz-yes">Oui</button><button class="btn sec" onclick="closeModal()">Annuler</button>');
 $('#rz-yes').onclick=function(){localStorage.removeItem(LS_KEY);localStorage.removeItem(SESS_KEY);location.reload()}};
 $('#kit-btn').onclick=function(){dl('index.html','<!DOCTYPE html>\n'+document.documentElement.outerHTML,'text/html');dl('sw.js',SW_SRC,'text/javascript');dl('manifest.webmanifest',JSON.stringify(MANIFEST,null,1),'application/manifest+json');toast('Kit téléchargé','ok')};
-var MANIFEST={name:'AutoLitige Expert v2.3',short_name:'AutoLitige',start_url:'./index.html',scope:'./',display:'standalone',orientation:'portrait',background_color:'#0b1220',theme_color:'#0b1220',lang:'fr',description:'Pannes connues, rappels, DTC, droit français. Hors ligne.',icons:[{src:'icon-192.png',sizes:'192x192',type:'image/png',purpose:'any'},{src:'icon-512.png',sizes:'512x512',type:'image/png',purpose:'any maskable'}]};
-var SW_SRC="var CACHE='autolitige-v3';\nself.addEventListener('install',function(e){e.waitUntil(caches.open(CACHE).then(function(c){return c.addAll(['./','./index.html','./manifest.webmanifest','./icon-192.png','./icon-512.png'])}).catch(function(){}));self.skipWaiting()});\nself.addEventListener('activate',function(e){e.waitUntil(caches.keys().then(function(ks){return Promise.all(ks.filter(function(k){return k!==CACHE}).map(function(k){return caches.delete(k)}))}));self.clients.claim()});\nvar NOCACHE=['api.nhtsa.gov','text.pollinations.ai','generativelanguage.googleapis.com','rappels-produits.gouv.fr'];\nself.addEventListener('fetch',function(e){var u=new URL(e.request.url);\nif(e.request.method!=='GET'||NOCACHE.some(function(h){return u.hostname.indexOf(h)>=0}))return;\ne.respondWith(caches.match(e.request).then(function(r){return r||fetch(e.request).then(function(res){if(res.ok&&u.origin===location.origin){var cp=res.clone();caches.open(CACHE).then(function(c){c.put(e.request,cp)})}return res}).catch(function(){return caches.match('./index.html')})}))});";
-/* --- init --- */
-function init(){
-fillBrands($('#f-b'),true);fillBrands($('#lib-b'),false);
+fillBrands($('#f-b'),true);
+fillBrands($('#lib-b'),false);
 var st=selfTest();
-if(!window.__AL_DATA){showErr('Bloc DONNÉES manquant (fichier tronqué ?) — vérifiez que le collage contient bien tout le fichier.')}
+if(!window.__AL_DATA){showErr('Bloc DONNÉES manquant (fichier tronqué ?) — recommencez le collage complet.')}
 else if(st.problems.length){showErr('Autocontrôle : '+st.problems.length+' anomalie(s) : '+st.problems.slice(0,3).join(' | '))}
-else{$('#selftest').textContent='Autocontrôle OK ✔ '+st.brands+' marques · '+st.engines+' motorisations · '+st.iss+' défauts · '+st.rec+' rappels'}
+else{$('#selftest').textContent='v2.4 — Autocontrôle OK ✔ '+st.brands+' marques · '+st.engines+' motorisations · '+st.iss+' défauts · '+st.rec+' rappels'}
 updateConn();setInterval(updateConn,5000);
 if('serviceWorker' in navigator&&location.protocol.indexOf('http')===0){navigator.serviceWorker.register('./sw.js').catch(function(){})}
-var s0=sessionValid();renderNav();if(s0){enterApp()}else{show('s-login')}}
+var s0=sessionValid();renderNav();
+if(s0){enterApp()}else{show('s-login')}}
 try{init();window.__AL_INIT=true}catch(e){showErr('ERREUR INIT : '+e.message)}
 </script>
 <script>
-window.addEventListener('load',function(){var el=document.getElementById('errBanner');if(!window.__AL_INIT&&el&&el.style.display==='none'){el.style.display='block';el.textContent='Le script principal n\u2019a pas démarré : fichier probablement TRONQUÉ au copier-coller. Vérifiez que la dernière ligne du fichier sur GitHub est bien </'+'html> et recommencez le collage.'}});
+window.addEventListener('load',function(){var el=document.getElementById('errBanner');
+if(!window.__AL_INIT&&el&&el.style.display==='none'){el.style.display='block';el.textContent='Le script principal n\u2019a pas démarré : fichier probablement TRONQUÉ au copier-coller. Vérifiez que la dernière ligne du fichier sur GitHub est bien </'+'html> et recommencez le collage.'}});
 </script>
 </body>
 </html>
