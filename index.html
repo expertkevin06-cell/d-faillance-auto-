@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b1220">
+<meta name="description" content="AutoLitige Expert — analyse de pannes et litiges automobiles : DTC, rappels NHTSA/Rappel Conso, responsabilité (droit français). Hors ligne.">
+<title>AutoLitige Expert — Diagnostic pannes & litiges auto</title>
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='112' fill='%232563eb'/%3E%3Cpath d='M96 300c0-10 6-18 16-20l40-8 34-62c8-14 22-22 38-22h84c16 0 30 8 38 22l34 62 40 8c10 2 16 10 16 20v52c0 8-6 14-14 14h-20c-8 0-14-6-14-14v-10H166v10c0 8-6 14-14 14h-20c-8 0-14-6-14-14z' fill='%23fff'/%3E%3Ccircle cx='196' cy='316' r='26' fill='%230b1220'/%3E%3Ccircle cx='316' cy='316' r='26' fill='%230b1220'/%3E%3C/svg%3E">
+<style>
+:root{--bg:#0b1220;--card:#121a2e;--card2:#0e1626;--bd:#1e2a45;--tx:#e7ecf5;--mut:#93a1bd;--ac:#3b82f6;--ac2:#8b5cf6;--ok:#22c55e;--warn:#f59e0b;--bad:#ef4444;--r:14px}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;min-height:100dvh}
+header{position:sticky;top:0;z-index:40;display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:rgba(11,18,32,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--bd)}
+.brand{display:flex;gap:10px;align-items:center}
+.brand svg{width:34px;height:34px}
+.brand b{font-size:15px}
+.brand small{display:block;font-size:10.5px;color:var(--mut)}
+#connChip{padding:1px 7px;border-radius:20px;font-size:10px;font-weight:600}
+#connChip.ok{background:#12331f;color:#4ade80}#connChip.warn{background:#3a2a10;color:#fbbf24}
+.hacts{display:flex;gap:8px}
+.ibtn{background:var(--card);border:1px solid var(--bd);color:var(--tx);width:38px;height:38px;border-radius:11px;display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative}
+.ibtn svg{width:19px;height:19px}
+.dot{position:absolute;top:6px;right:6px;width:8px;height:8px;border-radius:50%;background:var(--bad)}
+main{max-width:860px;margin:0 auto;padding:14px 14px 96px}
+.screen{display:none}.screen.on{display:block;animation:fade .18s}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1}}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:var(--r);padding:16px;margin-bottom:12px}
+.card h3{font-size:14px;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.card h3 svg{width:17px;height:17px;color:var(--ac)}
+h1{font-size:21px;margin:6px 0 4px}h2{font-size:16px}
+.sub{color:var(--mut);font-size:12.5px;line-height:1.5}
+label{font-size:12px;color:var(--mut);display:block;margin:10px 0 4px;font-weight:600}
+input,select,textarea{width:100%;background:var(--card2);border:1px solid var(--bd);color:var(--tx);border-radius:10px;padding:11px 12px;font-size:14px;font-family:inherit}
+textarea{min-height:90px;resize:vertical}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--ac)}
+.row{display:flex;gap:10px}.row>*{flex:1}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:13px;border:none;border-radius:12px;font-size:14.5px;font-weight:700;cursor:pointer;color:#fff;background:linear-gradient(135deg,var(--ac),var(--ac2));margin-top:12px}
+.btn.sec{background:var(--card);border:1px solid var(--bd);color:var(--tx)}
+.btn.danger{background:linear-gradient(135deg,#dc2626,#b91c1c)}
+.btn.ok{background:linear-gradient(135deg,#16a34a,#15803d)}
+.btn.sm{width:auto;padding:8px 14px;font-size:12.5px;margin-top:8px}
+.btn:disabled{opacity:.5}
+.btn svg{width:17px;height:17px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.chip{background:var(--card2);border:1px solid var(--bd);border-radius:20px;padding:6px 11px;font-size:12px;display:inline-flex;gap:6px;align-items:center}
+.badge{display:inline-block;padding:2px 9px;border-radius:20px;font-size:10.5px;font-weight:700}
+.b-ok{background:#12331f;color:#4ade80}.b-warn{background:#3a2a10;color:#fbbf24}.b-bad{background:#3b1518;color:#f87171}.b-info{background:#132747;color:#60a5fa}.b-mut{background:#1c2540;color:var(--mut)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.check{display:flex;gap:9px;align-items:flex-start;background:var(--card2);border:1px solid var(--bd);border-radius:10px;padding:9px 11px;margin-bottom:7px;font-size:13px;cursor:pointer}
+.check input{width:auto;margin-top:2px}
+nav{position:fixed;bottom:0;left:0;right:0;display:flex;background:rgba(11,18,32,.96);backdrop-filter:blur(10px);border-top:1px solid var(--bd);padding:6px 4px calc(8px + env(safe-area-inset-bottom));z-index:50}
+nav button{flex:1;background:none;border:none;color:var(--mut);font-size:10px;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 2px;cursor:pointer;border-radius:10px}
+nav button svg{width:21px;height:21px}
+nav button.on{color:var(--ac)}
+#modalBack{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:100;align-items:flex-end;justify-content:center}
+.modal{background:var(--card);border:1px solid var(--bd);border-radius:18px 18px 0 0;padding:20px;width:100%;max-width:560px;max-height:86vh;overflow:auto;animation:up .2s}
+@keyframes up{from{transform:translateY(40px)}to{transform:none}}
+#toasts{position:fixed;top:64px;left:50%;transform:translateX(-50%);z-index:200;display:flex;flex-direction:column;gap:8px;width:min(92%,440px)}
+.toast{background:var(--card);border:1px solid var(--bd);border-left:4px solid var(--ac);padding:11px 14px;border-radius:10px;font-size:13px;box-shadow:0 8px 30px rgba(0,0,0,.5)}
+.toast.ok{border-left-color:var(--ok)}.toast.bad{border-left-color:var(--bad)}.toast.warn{border-left-color:var(--warn)}
+.kv{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--bd);font-size:13px;gap:10px}
+.kv:last-child{border:none}.kv b{font-weight:600;text-align:right}
+.sec-title{font-size:15px;font-weight:800;margin:20px 0 8px;display:flex;gap:8px;align-items:center}
+.sec-title svg{width:18px;height:18px;color:var(--ac2)}
+.rep h4{margin:10px 0 4px;font-size:13.5px}.rep ul{padding-left:18px;margin:4px 0}.rep li{font-size:13.5px;margin:3px 0;line-height:1.45}
+.rep p{font-size:13.5px;line-height:1.5;margin:5px 0;white-space:pre-wrap}
+.rep .ai-box{background:var(--card2);border:1px solid var(--bd);border-radius:12px;padding:13px;margin-top:8px}
+.spin{width:15px;height:15px;border:2px solid var(--bd);border-top-color:var(--ac);border-radius:50%;display:inline-block;animation:sp .7s linear infinite;vertical-align:-3px}
+@keyframes sp{to{transform:rotate(360deg)}}
+.hist-item{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px;border:1px solid var(--bd);border-radius:11px;margin-bottom:8px;background:var(--card2);cursor:pointer}
+.logo-big{width:86px;height:86px;margin:18px auto 8px;display:block}
+.center{text-align:center}
+.mono{font-family:ui-monospace,monospace;font-size:15px;letter-spacing:2px;background:var(--card2);border:1px dashed var(--ac);border-radius:10px;padding:10px;text-align:center}
+.switch{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--bd);font-size:13.5px}
+.switch input{width:auto;transform:scale(1.25)}
+.src a{color:#7cb3ff;font-size:12.5px;word-break:break-all}
+footer{color:var(--mut);font-size:11px;text-align:center;padding:16px;line-height:1.6}
+@media print{header,nav,#toasts,.no-print{display:none!important}main{padding:0;max-width:none}body{background:#fff;color:#000}.card{border:1px solid #ccc;break-inside:avoid}}
+</style>
+</head>
+<body>
+<header>
+ <div class="brand"><span id="logoIco"></span><div><b>AutoLitige Expert</b><small id="connChip" class="warn">Hors ligne</small></div></div>
+ <div class="hacts"><button class="ibtn" id="btnNotif" title="Notifications"></button><button class="ibtn" id="btnLock" title="Session / Admin"></button></div>
+</header>
+<main id="main">
+
+<!-- ===== LOGIN ===== -->
+<section class="screen" id="s-login">
+ <div class="center">
+  <span id="logoBig"></span>
+  <h1>AutoLitige Expert</h1>
+  <p class="sub">Analyse de pannes & litiges automobiles<br>DTC · Rappels constructeurs · Droit français<br><b>100 % fonctionnel hors ligne</b></p>
+ </div>
+ <div class="card" style="margin-top:16px">
+  <button class="btn" id="btnAdmin">🔐 Connexion Administrateur</button>
+  <button class="btn sec" id="btnCode">🎫 J'ai un code d'accès</button>
+  <button class="btn sec" id="btnReq">📨 Demander un accès</button>
+ </div>
+ <footer>Base locale : codes DTC, pannes connues par marque/motorisation,<br>campagnes de rappel, Code civil / consommation / pénal.</footer>
+</section>
+
+<!-- ===== DEMANDE ACCES ===== -->
+<section class="screen" id="s-request">
+ <div class="card"><h3>📨 Demande d'accès à l'application</h3>
+  <p class="sub">Votre demande sera notifiée à l'administrateur qui pourra l'accepter, la refuser ou la révoquer.</p>
+  <label>Nom / Prénom ou Raison sociale *</label><input id="rq-name" placeholder="Ex. Jean Dupont">
+  <label>Contact (tél. ou e-mail)</label><input id="rq-contact" placeholder="06… / mail…">
+  <label>Motif de la demande</label><textarea id="rq-motif" placeholder="Litige en cours, usage professionnel…"></textarea>
+  <button class="btn" id="rq-send">Envoyer la demande</button>
+  <button class="btn sec" onclick="show('s-login')">Retour</button>
+ </div>
+</section>
+
+<!-- ===== ATTENTE ===== -->
+<section class="screen" id="s-pending">
+ <div class="card center"><div id="pend-body"></div></div>
+</section>
+
+<!-- ===== CODE ACCES ===== -->
+<section class="screen" id="s-code">
+ <div class="card"><h3>🎫 Activer un code d'accès</h3>
+  <label>Code fourni par l'administrateur</label>
+  <input id="code-in" placeholder="AL-XXXX-XXXX" style="text-transform:uppercase">
+  <label>Votre nom</label><input id="code-name" placeholder="Nom">
+  <button class="btn" id="code-go">Activer l'accès</button>
+  <button class="btn sec" onclick="show('s-login')">Retour</button>
+ </div>
+</section>
+
+<!-- ===== NOUVELLE ANALYSE ===== -->
+<section class="screen" id="s-new">
+ <div class="card"><h3 id="tNew">🚗 Nouvelle analyse de litige</h3>
+  <label>Marque *</label><input id="f-marque" list="marques" placeholder="Renault, Peugeot, Volkswagen…">
+  <datalist id="marques"></datalist>
+  <div class="row"><div><label>Modèle</label><input id="f-modele" placeholder="Clio, 308, Golf…"></div>
+  <div><label>Année</label><input id="f-annee" type="number" placeholder="2018"></div></div>
+  <div class="row"><div><label>Motorisation</label><input id="f-motor" placeholder="1.2 TCe, 1.5 dCi, 2.0 TDI…"></div>
+  <div><label>Kilométrage</label><input id="f-km" placeholder="98 000 km"></div></div>
+  <label>Contexte d'achat</label>
+  <select id="f-achat"><option>Occasion — vendeur professionnel</option><option>Occasion — particulier</option><option>Véhicule neuf</option><option>Achat ancien / hors litige de vente</option></select>
+  <label>Symptômes décrits par l'utilisateur *</label>
+  <textarea id="f-symptomes" placeholder="Ex. : bruit de chaîne à froid, perte de puissance, voyant moteur, fumée blanche, à-coups boîte…"></textarea>
+  <label>Codes DTC relevés (valise OBD)</label>
+  <input id="f-dtc" placeholder="P0300, P0016, U0100…">
+  <label>Historique / entretien / réparations déjà faites</label>
+  <textarea id="f-historique" placeholder="Factures, distribution faite, interventions précédentes…"></textarea>
+ </div>
+ <div class="card"><h3>⚖️ Parties concernées</h3>
+  <label class="check"><input type="checkbox" name="parties" value="Vendeur professionnel"> Vendeur professionnel (garage, concession, négoce)</label>
+  <label class="check"><input type="checkbox" name="parties" value="Vendeur particulier"> Vendeur particulier</label>
+  <label class="check"><input type="checkbox" name="parties" value="Garage / réparateur"> Garage / réparateur intervenu</label>
+  <label class="check"><input type="checkbox" name="parties" value="Constructeur / importateur"> Constructeur / importateur</label>
+  <label class="check"><input type="checkbox" name="parties" value="Contrôleur technique"> Centre de contrôle technique</label>
+ </div>
+ <div class="card"><h3>🧩 Faits notables</h3>
+  <label class="check"><input type="checkbox" name="faits" value="Défaut non signalé à la vente"> Défaut non signalé / dissimulé à la vente</label>
+  <label class="check"><input type="checkbox" name="faits" value="Kilométrage suspect"> Kilométrage suspect / compteur</label>
+  <label class="check"><input type="checkbox" name="faits" value="Rappel non réalisé"> Rappel constructeur connu non réalisé</label>
+  <label class="check"><input type="checkbox" name="faits" value="Intervention garage récente inefficace"> Intervention garage récente inefficace</label>
+  <label class="check"><input type="checkbox" name="faits" value="Panne récurrente déjà réparée"> Panne récurrente déjà « réparée »</label>
+  <label class="check"><input type="checkbox" name="faits" value="Entretien non à jour"> Entretien non à jour / pas de factures</label>
+  <label class="check"><input type="checkbox" name="faits" value="Véhicule accidenté"> Véhicule accidenté / réparation structurelle</label>
+  <label class="check"><input type="checkbox" name="faits" value="Immobilisation prolongée"> Immobilisation prolongée du véhicule</label>
+ </div>
+ <button class="btn" id="btnAnalyze">🧠 Lancer l'analyse complète</button>
+ <div class="card" id="aiStatusCard" style="display:none;margin-top:12px"><span class="spin"></span> <span id="aiStatus" class="sub">Initialisation…</span></div>
+</section>
+
+<!-- ===== RAPPORT ===== -->
+<section class="screen" id="s-report">
+ <div class="card no-print"><div class="row" style="flex-wrap:wrap">
+  <button class="btn sm" id="rep-txt">⬇️ Rapport .txt</button>
+  <button class="btn sm sec" id="rep-print">🖨️ Imprimer / PDF</button>
+  <button class="btn sm sec" id="rep-share">📤 Partager</button>
+  <button class="btn sm sec" onclick="show('s-new')">➕ Nouvelle</button>
+ </div></div>
+ <div id="reportBox" class="rep"></div>
+</section>
+
+<!-- ===== HISTORIQUE ===== -->
+<section class="screen" id="s-history">
+ <div class="card"><h3>🕘 Historique des analyses</h3><div id="histList"></div></div>
+</section>
+
+<!-- ===== ADMIN ACCES ===== -->
+<section class="screen" id="s-access">
+ <div class="card"><h3>🔔 Demandes d'accès en attente <span class="badge b-bad" id="pendCount">0</span></h3><div id="reqList"></div></div>
+ <div class="card"><h3>🎫 Codes d'accès & sessions</h3><div id="codeList"></div></div>
+ <div class="card"><h3>👥 Utilisateurs autorisés</h3><div id="userList"></div></div>
+</section>
+
+<!-- ===== REGLAGES ===== -->
+<section class="screen" id="s-settings">
+ <div class="card"><h3>🤖 Intelligence artificielle</h3>
+  <div class="switch"><span>Activer les IA en ligne</span><input type="checkbox" id="st-online"></div>
+  <div class="switch"><span>Utiliser ma clé API Gemini (prioritaire)</span><input type="checkbox" id="st-gem"></div>
+  <label>Clé API Gemini (optionnelle, stockée localement)</label>
+  <input id="st-key" type="password" placeholder="AIza…">
+  <button class="btn sm" id="st-save">Enregistrer les réglages</button>
+  <p class="sub" style="margin-top:8px">Sans clé : 6 IA gratuites en cascade (openai → mistral → deepseek → llama → qwen-coder → gemini). Hors ligne : moteur expert local.</p>
+ </div>
+ <div class="card"><h3>💾 Sauvegarde & données</h3>
+  <button class="btn sm ok" id="bk-exp">⬇️ Exporter la sauvegarde (JSON)</button>
+  <button class="btn sm sec" id="bk-imp">⬆️ Importer une sauvegarde</button>
+  <button class="btn sm danger" id="bk-reset">🗑️ Réinitialiser l'application</button>
+  <p class="sub" id="bk-info" style="margin-top:8px"></p>
+ </div>
+ <div class="card"><h3>📦 Kit de déploiement / APK</h3>
+  <p class="sub">Télécharge tous les fichiers (index.html, sw.js, manifest, icônes PNG) pour hébergement + génération APK via PWABuilder.</p>
+  <button class="btn sm" id="kit-btn">⬇️ Télécharger le kit complet</button>
+ </div>
+</section>
+
+<!-- ===== A PROPOS ===== -->
+<section class="screen" id="s-about">
+ <div class="card"><h3>ℹ️ À propos</h3>
+  <p class="sub">AutoLitige Expert v1.0 — Application d'aide à l'analyse des litiges automobiles. Les conclusions sont fournies <b>à titre informatif</b> et ne remplacent ni un expert automobile agréé ni un avocat. Fonctionne en 4G/5G/Wi-Fi et totalement hors ligne grâce à la base locale intégrée.</p></div>
+ <div class="card src"><h3>🌐 Sources de rappels (vérification en ligne)</h3>
+  <div class="kv"><span>NHTSA (API officielle)</span><a href="https://www.nhtsa.gov/recalls" target="_blank" rel="noopener">nhtsa.gov/recalls</a></div>
+  <div class="kv"><span>Rappel Conso (France)</span><a href="https://rappels-produits.gouv.fr" target="_blank" rel="noopener">rappels-produits.gouv.fr</a></div>
+  <div class="kv"><span>EU Safety Gate (ex-RAPEX)</span><a href="https://ec.europa.eu/safety-gate" target="_blank" rel="noopener">ec.europa.eu/safety-gate</a></div>
+  <div class="kv"><span>Légifrance</span><a href="https://www.legifrance.gouv.fr" target="_blank" rel="noopener">legifrance.gouv.fr</a></div>
+ </div>
+ <div class="card"><h3>📚 Base juridique intégrée</h3><p class="sub">Code civil : 1103, 1104, 1231-1, 1240, 1245 et s., 1604, 1641-1648 · Code de la consommation : L.217-3 et s., L.121-2 et s., L.611-1 · Code pénal : 223-1, 313-1 · Code de procédure civile : 145, 750-1 · Règlement (UE) 2023/988 · Jurisprudence (vendeur professionnel présumé connaître les vices ; obligation de résultat du réparateur).</p></div>
+ <button class="btn sec" onclick="logout()">🚪 Se déconnecter</button>
+</section>
+</main>
+
+<nav id="nav"></nav>
+<div id="modalBack"></div>
+<div id="toasts"></div>
+<input type="file" id="fileImport" hidden accept="application/json,.json">
+
+<script>
+/* ============================================================
+   AutoLitige Expert — PWA complète (admin Kevin83600)
+   ============================================================ */
+'use strict';
+/* ---------- icônes SVG intégrées ---------- */
+const LOGO_SVG="<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='#2563eb'/><stop offset='1' stop-color='#7c3aed'/></linearGradient></defs><rect width='512' height='512' rx='112' fill='url(#g)'/><path d='M96 300c0-10 6-18 16-20l40-8 34-62c8-14 22-22 38-22h84c16 0 30 8 38 22l34 62 40 8c10 2 16 10 16 20v52c0 8-6 14-14 14h-20c-8 0-14-6-14-14v-10H166v10c0 8-6 14-14 14h-20c-8 0-14-6-14-14z' fill='#fff' opacity='.95'/><circle cx='196' cy='316' r='26' fill='#0b1220'/><circle cx='316' cy='316' r='26' fill='#0b1220'/><rect x='150' y='366' width='212' height='24' rx='12' fill='#fff' opacity='.85'/></svg>";
+const IC={bell:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>',
+lock:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>',
+car:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 11l1.5-4.5A2 2 0 0 1 8.4 5h7.2a2 2 0 0 1 1.9 1.5L19 11M3 16v-3a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v3"/><circle cx="7.5" cy="16.5" r="1.6"/><circle cx="16.5" cy="16.5" r="1.6"/></svg>',
+hist:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l3 3"/></svg>',
+shield:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>',
+gear:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="4" y1="7" x2="20" y2="7"/><circle cx="9" cy="7" r="2.4" fill="var(--bg)"/><line x1="4" y1="17" x2="20" y2="17"/><circle cx="15" cy="17" r="2.4" fill="var(--bg)"/></svg>',
+info:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="8.01"/><line x1="12" y1="12" x2="12" y2="16"/></svg>',
+dtc:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M7 9h4M7 13h7"/></svg>',
+gavel:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14 4l6 6M12 6l6 6M8 10l6-6M3 21h9M12 13l-8 8"/></svg>',
+warn:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12" y2="17.01"/></svg>',
+recall:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12a9 9 0 1 1-2.6-6.3"/><polyline points="21 3 21 9 15 9"/></svg>',
+brain:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2a4 4 0 0 0-4 4 4 4 0 0 0-2 7 4 4 0 0 0 3 6h6a4 4 0 0 0 3-6 4 4 0 0 0-2-7 4 4 0 0 0-4-4z"/><path d="M12 2v20"/></svg>',
+save:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/></svg>'};
+/* ---------- utilitaires ---------- */
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid=()=> (crypto.randomUUID?crypto.randomUUID():Date.now()+'-'+Math.random().toString(36).slice(2));
+const iso=()=>new Date().toISOString();
+const v=id=>($('#'+id)?.value||'').trim();
+function toast(m,t='info'){const d=document.createElement('div');d.className='toast '+t;d.textContent=m;$('#toasts').appendChild(d);setTimeout(()=>d.remove(),4200)}
+function modal(h){$('#modalBack').innerHTML='<div class="modal">'+h+'</div>';$('#modalBack').style.display='flex'}
+function closeModal(){$('#modalBack').style.display='none';$('#modalBack').innerHTML=''}
+$('#modalBack').addEventListener('click',e=>{if(e.target.id==='modalBack')closeModal()});
+function dl(name,content,type='text/plain'){const b=content instanceof Blob?content:new Blob([content],{type});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),8000)}
+function notify(title,body){try{if('Notification'in window&&Notification.permission==='granted'){new Notification(title,{body,icon:LOGO_URI()})}}catch(e){}}
+function LOGO_URI(){return 'data:image/svg+xml;utf8,'+encodeURIComponent(LOGO_SVG)}
+/* ---------- ADMIN (mot de passe demandé) ---------- */
+const ADMIN_KEY=atob('S2V2aW44MzYwMA=='); // « Kevin83600 »
+/* ---------- persistance ---------- */
+const LS_KEY='autolitige_db_v1',SESS_KEY='autolitige_session';
+function seed(){return{v:1,requests:[],codes:[],users:[],analyses:[],settings:{aiOnline:true,useGemini:false,geminiKey:''},savedAt:iso()}}
+let DB;try{DB=JSON.parse(localStorage.getItem(LS_KEY))||seed()}catch(e){DB=seed()}
+function save(){DB.savedAt=iso();try{localStorage.setItem(LS_KEY,JSON.stringify(DB))}catch(e){toast('Stockage saturé : exportez une sauvegarde','warn')}}
+function getSession(){try{return JSON.parse(localStorage.getItem(SESS_KEY))}catch(e){return null}}
+function setSession(s){s?localStorage.setItem(SESS_KEY,JSON.stringify(s)):localStorage.removeItem(SESS_KEY)}
+function sessionValid(){const s=getSession();if(!s)return null;if(s.role==='admin')return s;if(s.role==='user'){const c=DB.codes.find(x=>x.code===s.code&&x.status==='active');if(c)return s;setSession(null)}return null}
+/* ---------- base DTC locale ---------- */
+const DTC_DB={
+P0008:{d:'Performance du calage de distribution (banc 1)',c:['Chaîne de distribution détendue','Tendeur de chaîne défaillant','Décalage après intervention distribution'],k:['Risque de casse moteur','Ralenti instable, perte de puissance'],s:3},
+P0016:{d:'Corrélation vilebrequin / arbre à cames (banc 1)',c:['Chaîne décalée ou détendue','Pignon déphaseur VVT/VANOS HS','Capteur mal remonté après intervention'],k:['Casse moteur possible par contact soupapes/pistons'],s:3},
+P0017:{d:'Corrélation vilebrequin / arbre à cames (échappement)',c:['Chaîne de distribution usée','Solénoïde de déphasage grippé'],k:['Fonctionnement dégradé, risque mécanique majeur'],s:3},
+P0087:{d:'Pression rampe carburant trop basse',c:['Pompe haute pression faible','Pompe basse pression / crépine encrassée','Limiteur ou capteur de rampe','Fuite interne injecteurs'],k:['Ratés, calages, difficulté de démarrage, mode dégradé'],s:2},
+P0088:{d:'Pression rampe carburant trop élevée',c:['Régulateur de pression HS','Capteur de rampe défaillant'],k:['Fumée noire, surconsommation, risque injecteurs'],s:2},
+P0101:{d:'Signal débitmètre d’air (MAF) incohérent',c:['Débitmètre encrassé ou HS','Fuite d’air après débitmètre','Faisceau'],k:['Puissance irrégulière, surconsommation'],s:1},
+P0102:{d:'Débitmètre d’air : signal trop bas',c:['MAF encrassé/HS','Prise d’air'],k:['Mélange incohérent, voyant moteur'],s:1},
+P0106:{d:'Capteur MAP/pression collecteur incohérent',c:['Capteur MAP HS','Durit de dépression fissurée'],k:['Ralenti instable, puissance réduite'],s:1},
+P0128:{d:'Température moteur sous le seuil de régulation',c:['Thermostat bloqué ouvert','Sonde de température'],k:['Surconsommation, encrassement FAP, usure accrue'],s:1},
+P0130:{d:'Circuit sonde lambda (banc 1 capteur 1)',c:['Sonde lambda HS','Faisceau coupé'],k:['Mélange non régulé, pollution, consommation'],s:1},
+P0171:{d:'Mélange trop pauvre (banc 1)',c:['Prise d’air collecteur','Débitmètre faible','Injecteurs encrassés','Pompe carburant faible'],k:['Ratés, perte de puissance, risque catalyseur'],s:2},
+P0172:{d:'Mélange trop riche (banc 1)',c:['Injecteurs qui fuient','Capteur température HS','Régulation lambda'],k:['Fumée noire, encrassement, surconsommation'],s:2},
+P0174:{d:'Mélange trop pauvre (banc 2)',c:['Prise d’air','Débitmètre','Pompe HP'],k:['Ratés, mode dégradé'],s:2},
+P0191:{d:'Capteur de pression rampe carburant',c:['Capteur HS','Faisceau'],k:['Démarrage difficile, à-coups'],s:2},
+P0201:{d:'Circuit injecteur cylindre 1',c:['Injecteur HS ou grippé','Faisceau/connecteur'],k:['Ratés, fumée, risque casse par imbrûlés'],s:2},
+P0234:{d:'Surpression turbo (overboost)',c:['Géométrie variable grippée','Wastegate HS','Électrovanne de régulation'],k:['Mode dégradé répété, risque casse turbo'],s:2},
+P0299:{d:'Pression de turbo insuffisante',c:['Fuite circuit suralimentation (durit, échangeur)','Géométrie turbo grippée','Turbo usé','Électrovanne'],k:['Perte de puissance, mode dégradé, surconsommation'],s:2},
+P0300:{d:'Ratés de combustion aléatoires / multiples',c:['Bougies / bobines','Injecteurs','Compression (joint de culasse, segmentation)','Distribution décalée'],k:['Catalyseur endommagé, fonctionnement irrégulier'],s:2},
+P0301:{d:'Raté cylindre 1',c:['Bobine ou bougie cyl. 1','Injecteur','Compression'],k:['Vibrations, risque catalyseur'],s:2},
+P0302:{d:'Raté cylindre 2',c:['Bobine/bougie cyl. 2','Injecteur','Compression'],k:['Vibrations, mode dégradé'],s:2},
+P0303:{d:'Raté cylindre 3',c:['Bobine/bougie cyl. 3','Injecteur','Compression'],k:['Vibrations, mode dégradé'],s:2},
+P0304:{d:'Raté cylindre 4',c:['Bobine/bougie cyl. 4','Injecteur','Compression'],k:['Vibrations, mode dégradé'],s:2},
+P0335:{d:'Capteur de régime vilebrequin (CKP)',c:['Capteur HS','Cible encrassée','Faisceau'],k:['Calages, non-démarrage'],s:2},
+P0340:{d:'Capteur d’arbre à cames (CMP)',c:['Capteur HS','Distribution décalée','Faisceau'],k:['Démarrage long, voyant, mode dégradé'],s:2},
+P0351:{d:'Circuit bobine d’allumage A',c:['Bobine HS','Faisceau'],k:['Ratés, perte de puissance'],s:1},
+P0401:{d:'Débit EGR insuffisant',c:['Vanne EGR encrassée/bloquée','Conduits calaminés','Refroidisseur EGR'],k:['Voyant moteur, encrassement, risque casse (fragilisation pistons sur certains diesel)'],s:2},
+P0402:{d:'Débit EGR excessif',c:['Vanne EGR bloquée ouverte'],k:['Fumée noire, trous à l’accélération, calages'],s:2},
+P0420:{d:'Rendement catalyseur insuffisant (banc 1)',c:['Catalyseur usé ou empoisonné (ratés, huile)','Sonde lambda arrière'],k:['Contre-visite contrôle technique, pollution'],s:1},
+P0430:{d:'Rendement catalyseur insuffisant (banc 2)',c:['Catalyseur HS','Sonde lambda'],k:['Pollution, contre-visite'],s:1},
+P0456:{d:'Fuite très faible du système EVAP',c:['Bouchon réservoir','Électrovanne purge'],k:['Voyant moteur sans conséquence mécanique grave'],s:1},
+P0500:{d:'Capteur de vitesse véhicule',c:['Capteur ABS/roue HS','Cible'],k:['Compteur erroné, ESP/ABS dégradé'],s:1},
+P0513:{d:'Clé antidémarrage incorrecte',c:['Transpondeur de clé','Antenne Neiman','Calculateur UCH/BSI'],k:['Non-démarrage intermittent'],s:1},
+P0562:{d:'Tension système trop basse',c:['Batterie faible','Alternateur','Cosses oxydées'],k:['Pannes électriques en cascade, recalculats'],s:2},
+P0606:{d:'Défaut interne calculateur moteur',c:['Calculateur défaillant','Surtension'],k:['Mode dégradé, dysfonctionnements multiples'],s:2},
+P0700:{d:'Défaut système de commande de boîte de vitesses',c:['Mécatronique (DSG/EDC)','Calculateur boîte','Faisceau'],k:['À-coups, passages ratés, immobilisation possible'],s:3},
+P0715:{d:'Capteur vitesse entrée de boîte',c:['Capteur HS','Mécatronique'],k:['Passages de rapports brutaux'],s:2},
+P0720:{d:'Capteur vitesse sortie de boîte',c:['Capteur HS'],k:['Comptage erroné, rapports inadaptés'],s:2},
+P0730:{d:'Rapport de transmission incorrect',c:['Embrayages de boîte usés','Mécatronique','Niveau d’huile BVA'],k:['Patinage, casse boîte à terme'],s:3},
+P0741:{d:'Convertisseur de couple : embrayage bloqué',c:['Convertisseur','Électrovannes BVA'],k:['Vibrations, échauffement BVA'],s:2},
+P0841:{d:'Capteur de pression hydraulique boîte',c:['Capteur','Mécatronique'],k:['Passages dégradés, mode secours boîte'],s:2},
+P2002:{d:'Efficacité FAP sous le seuil (banc 1)',c:['FAP saturé ou fissuré','Capteurs différentiels','Usage urbain uniquement'],k:['Régénérations fréquentes, mode dégradé, remplacement coûteux'],s:2},
+P2263:{d:'Performance du système de suralimentation',c:['Fuites suralimentation','Turbo','Encrassement admission'],k:['Perte de puissance récurrente'],s:2},
+P2279:{d:'Fuite d’air du système d’admission',c:['Durit fissurée','Collecteur','Reniflard'],k:['Ralenti instable, fumée, mélange pauvre'],s:2},
+P2291:{d:'Pression d’injection insuffisante au démarrage',c:['Pompe HP diesel','Retour injecteurs excessif'],k:['Démarrage difficile à froid'],s:2},
+P242F:{d:'FAP : restriction par suie élevée',c:['FAP colmaté','Régénérations interrompues'],k:['Mode dégradé, risque incendie localisé, remplacement'],s:2},
+P2463:{d:'FAP : accumulation de suie au-dessus du seuil',c:['Défaut régénération','EGR','Capteur différentiel'],k:['Encrassement sévère, perte de puissance'],s:2},
+U0100:{d:'Perte de communication avec le calculateur moteur',c:['Faisceau CAN','Calculateur alimenté défaillant','Boîtier BSI/UCH'],k:['Panne totale électronique, non-démarrage'],s:3},
+U0121:{d:'Perte de communication avec l’ABS/ESP',c:['Calculateur ABS','Faisceau CAN'],k:['Voyants ABS/ESP, aides à la conduite HS'],s:2},
+C0035:{d:'Capteur de vitesse roue avant gauche',c:['Capteur ABS','Cible magnétique'],k:['ABS/ESP défaillant, contre-visite CT'],s:1},
+B1000:{d:'Défaut système airbag / prétensionneur',c:['Module airbag','Nappe volant','Rappel Takata à vérifier absolument'],k:['SÉCURITÉ : non-déploiement possible en cas de choc'],s:3}};
+function dtcGeneric(code){const p=code[0].toUpperCase();const fam={P:'groupe motopropulseur (moteur/boîte)',B:'carrosserie (airbags, habitacle)',C:'châssis (ABS, freinage, direction)',U:'réseau multiplexé (communication calculateurs)'}[p]||'inconnu';
+const gen=code[1]==='0'?'générique (norme SAE)':'spécifique constructeur';
+return{d:'Code '+code+' — système '+fam+', définition '+gen,c:['Consulter la documentation technique constructeur ou la valise d’atelier pour la définition exacte'],k:['Interprétation à confirmer par un diagnostic outillé'],s:1}}
+/* ---------- symptômes ---------- */
+const SYMPTOMS=[
+{t:'Fumée blanche épaisse, odeur âcre',m:['fumée blanche','fumee blanche','liquide de refroidissement','mayonnaise'],o:['Joint de culasse ou culasse fissurée','Refroidisseur EGR percé (diesel)'],k:['Surchauffe, mélange LDR/cylindres, casse moteur à terme'],s:3},
+{t:'Fumée noire',m:['fumée noire','fumee noire'],o:['Mélange trop riche : injecteurs, EGR bloquée, FAP absent/HS','Débitmètre faux'],k:['Encrassement, contre-visite CT, risque FAP/catalyseur'],s:2},
+{t:'Fumée bleue / consommation d’huile',m:['fumée bleue','consomme de l huile','baisse du niveau d huile','niveau d huile','huile'],o:['Segmentation / queues de soupapes','Turbo (jeu d’axe)','Courroie/chaîne distribution et aspiration d’huile (cf. défauts connus du modèle)'],k:['Consommation d’huile anormale, casse moteur possible, encrassement FAP'],s:3},
+{t:'Ratés, broutage, hoquets',m:['raté','ratés','broute','hoquet','tremble','tours irréguliers'],o:['Bougies / bobines d’allumage','Injecteur défaillant','Compression (joint de culasse, segmentation)','Distribution décalée'],k:['Détérioration catalyseur, mode dégradé'],s:2},
+{t:'Perte de puissance / mode dégradé',m:['perte de puissance','manque de puissance','mode dégradé','limp','bridé'],o:['Turbo / circuit de suralimentation (fuite, géométrie)','EGR ou FAP colmaté','Capteurs (MAP, MAF, pression rampe)'],k:['Conduite dégradée, récurrence tant que la cause n’est pas traitée'],s:2},
+{t:'Bruit de chaîne à froid / claquement métallique',m:['chaîne','chaine','cliquetis','claquement à froid','bruit métallique'],o:['Chaîne de distribution détendue / tendeur HS (défaut connu sur de nombreux moteurs : voir section défauts récurrents)'],k:['RISQUE DE CASSE MOTEUR — immobilisation et expertise recommandées'],s:3},
+{t:'Bruit de courroie / sifflement',m:['courroie'],o:['Courroie d’accessoires ou courroie de distribution (immergée sur certains moteurs : dégradation connue)'],k:['Casse distribution = casse moteur'],s:3},
+{t:'Surchauffe',m:['surchauffe','chauffe','température monte','jauge de température'],o:['Thermostat bloqué fermé','Pompe à eau, fuite circuit','Joint de culasse'],k:['Casse moteur si poursuite de la conduite'],s:3},
+{t:'Ne démarre pas / démarrage difficile',m:['démarre pas','demarre pas','refuse de démarrer','démarrage difficile','démarre mal'],o:['Batterie / démarreur','Antidémarrage (clé, bague)','Alimentation carburant (pompe, injecteurs)'],k:['Immobilisation, diagnostic électrique nécessaire'],s:2},
+{t:'À-coups de boîte de vitesses',m:['à-coups','acoups','boîte','passage de rapport','dsg','edc','powershift','patine'],o:['Mécatronique / bloc hydraulique (DSG, EDC, Powershift)','Embrayage usé, volant moteur','Niveau/qualité d’huile BVA'],k:['Casse de boîte coûteuse si non traitée'],s:3},
+{t:'Vibrations au roulage ou freinage',m:['vibration','vibre','tremblement volant'],o:['Disques voilés, pneus, triangles','Volant moteur bi-masse'],k:['Usure accélérée, sécurité routière'],s:1},
+{t:'Bruits de freinage',m:['frein','freinage','siffle au freinage'],o:['Plaquettes/disques usés, étrier grippé'],k:['Contre-visite CT, sécurité'],s:1},
+{t:'Direction dure ou bruyante',m:['direction dure','bruit direction'],o:['Pompe de direction assistée, crémaillère','Colonne (direction électrique)'],k:['Sécurité, coût élevé'],s:2},
+{t:'Fuite sous le véhicule',m:['fuite','goutte','tache'],o:['Joints, durits, carter, presse-étoupes'],k:['Perte d’huile/LDR menant à la casse si ignorée'],s:2},
+{t:'Voyant moteur allumé',m:['voyant moteur','mil'],o:['Lire les codes DTC (valise OBD) — cause à préciser'],k:['Selon code : de bénin à critique'],s:1},
+{t:'Voyant spiralé / préchauffage clignotant',m:['préchauffage','prechauffage','spiral'],o:['Bougies de préchauffage, relais','Défaut injection/mélange sur diesel récents'],k:['Mode dégradé fréquent'],s:1},
+{t:'Pannes électriques récurrentes',m:['batterie','électrique','electrique','contacteur','voyants fous','tableau de bord'],o:['Batterie/alternateur, masses, boîtier BSI/UCH','Faisceau oxydé'],k:['Dysfonctionnements multiples, diagnostics trompeurs'],s:2},
+{t:'Arrêt moteur en roulant',m:['arrêt moteur','arret moteur','cale en roulant','se coupe'],o:['Capteur PMH/vilebrequin, pompe à carburant','Antidémarrage'],k:['DANGER : perte d’assistance freinage/direction'],s:3},
+{t:'Problème FAP / régénérations',m:['fap','dpf','filtre à particules','régénération','regeneration','colmat'],o:['FAP saturé (usage urbain), capteur différentiel, injecteur de régénération'],k:['Mode dégradé, remplacement très coûteux'],s:2},
+{t:'Problème injecteurs',m:['injecteur','injecteurs'],o:['Injecteur grippé/fuyard, retour excessif, calamine'],k:['Ratés, dilution huile, risque casse'],s:2},
+{t:'Volant moteur / embrayage',m:['volant moteur','embrayage','point de patinage'],o:['Volant moteur bi-masse fatigué, disque d’embrayage, mécanisme'],k:['Bruit, vibrations, immobilisation à terme'],s:2}];
+/* ---------- défauts récurrents par marque / moteur ---------- */
+const BRAND_ISSUES=[
+{k:['renault','dacia','1.2 tce','tce 115','tce 130','h5f'],t:'Renault/Dacia 1.2 TCe (H5F) — chaîne de distribution',o:['Allongement prématuré de la chaîne de distribution','Consommation d’huile anormale'],k:['Casse moteur hors garantie fréquemment rapportée','Campagne constructeur de prise en charge selon âge/km'],r:'Vérifier campagne Renault (chaîne H5F) et historique d’entretien'},
+{k:['renault','dacia','1.5 dci','k9k'],t:'1.5 dCi (K9K) — injection / EGR',o:['Injecteurs et pompe HP sensibles à la qualité carburant','Encrassement EGR, FAP'],k:['Ratés, démarrage difficile, mode dégradé'],r:'Contrôler retours injecteurs et calamine admission'},
+{k:['peugeot','citroën','citroen','ds ','opel','1.2 puretech','puretech','eb2'],t:'1.2 PureTech (EB2) — courroie immergée dans l’huile',o:['Dégradation prématurée de la courroie de distribution immergée','Débris obstruant la pompe à huile'],k:['Perte de pression d’huile → casse moteur','Extension de garantie / campagnes Stellantis connues'],r:'Défaut reconnu : contrôler courroie et crépine ; vérifier prise en charge constructeur'},
+{k:['peugeot','citroën','citroen','ds','mini','1.6 thp','thp','ep6','vti'],t:'1.6 THP/VTi (EP6) — chaîne de distribution',o:['Détente de chaîne, tension insuffisante','Décalage distribution'],k:['Claquement à froid puis casse moteur potentielle'],r:'Surveiller codes P0016/P0008 et bruit à froid'},
+{k:['peugeot','citroën','citroen','1.6 hdi','2.0 hdi','1.5 bluehdi'],t:'HDI / BlueHDi — injecteurs, additif FAP, arbre à cames (1.5 BlueHDi)',o:['Joints d’injecteurs, encrassement','Usure arbre à cames rapportée sur 1.5 BlueHDi'],k:['Casse moteur possible sur 1.5 BlueHDi (campagne Stellantis)'],r:'Vérifier campagnes récentes sur 1.5 BlueHDi'},
+{k:['volkswagen','vw','audi','skoda','seat','cupra','tsi'],t:'TSI (EA111/EA888) — chaîne / consommation d’huile',o:['Chaîne de distribution sur anciennes générations','Consommation d’huile EA888 Gen2'],k:['Casse moteur, rappel de consommation d’huile (USA)'],r:'Vérifier campagnes VW/Audi par VIN'},
+{k:['volkswagen','vw','audi','skoda','seat','dsg','dq200','s tronic'],t:'Boîtes DSG (DQ200 / DQ250) — mécatronique',o:['Mécatronique défaillant, surchauffe embrayages à sec'],k:['À-coups, immobilisation, remplacement coûteux','Campagnes logicielles et extensions connues'],r:'Codes P0700/P17BF typiques ; vérifier historique de vidange DSG'},
+{k:['volkswagen','vw','audi','skoda','seat','tdi','2.0 tdi','1.6 tdi'],t:'TDI — injecteurs, volant moteur, EGR',o:['Injecteurs piézo (rappels anciens), volant moteur bi-masse','Rappels EGR sur certains 2.0 TDI'],k:['Mode dégradé, vibrations, coûts élevés'],r:'Vérifier rappels EGR/chauffage par VIN'},
+{k:['bmw','n47','b47'],t:'BMW N47 — chaîne de distribution (arrière moteur)',o:['Usure/détente de chaîne, bruit de raclement à froid'],k:['Casse moteur à terme ; intervention lourde (dépose moteur)'],r:'Défaut connu sur N47 2007-2014 : expertise recommandée'},
+{k:['bmw'],t:'BMW — refroidisseur EGR (risque incendie)',o:['Fuite interne du refroidisseur EGR'],k:['Départs de feu : campagnes de rappel mondiales 2018-2024'],r:'Vérifier impérativement le rappel EGR par VIN'},
+{k:['mercedes','om651','om 651'],t:'Mercedes OM651 — injecteurs / chaîne',o:['Injecteurs, chaîne de distribution côté boîte'],k:['Coûts de remise en état élevés'],r:''},
+{k:['ford','1.0 ecoboost','ecoboost'],t:'Ford 1.0 EcoBoost — courroie immergée & durits',o:['Courroie de distribution immergée se délitant','Durit de refroidissement (rappel Kuga/Focus)'],k:['Obstruction pompe à huile, surchauffe, casse moteur'],r:'Vérifier rappels durits et historique courroie'},
+{k:['ford','powershift','focus','fiesta','dps6'],t:'Ford PowerShift DPS6 — boîte à double embrayage',o:['Module d’embrayage/mécatronique défaillant'],k:['À-coups, patinage ; contentieux et extensions connues'],r:'Vérifier extensions de garantie DPS6'},
+{k:['toyota','lexus'],t:'Toyota/Lexus — hybrides & rappels',o:['Batterie hybride (vieillissement)','Rappels Takata (Yaris, Corolla…), pompe carburant basse pression (rappel mondial)'],k:['Immobilisation, sécurité airbag'],r:'Vérifier rappels par VIN Toyota (gratuit)'},
+{k:['honda'],t:'Honda — airbags Takata',o:['Gonfleur Takata défectueux (éclatement)'],k:['SÉCURITÉ VITALE : rappel prioritaire'],r:'Ne pas conduire sans vérification si modèle concerné'},
+{k:['hyundai','kia','gdi','theta'],t:'Hyundai/Kia — moteurs GDI / Theta II',o:['Coussinets de bielles, débris métalliques, risque incendie'],k:['Casse moteur, rappels massifs USA/UE, extensions de garantie'],r:'Vérifier campagne par VIN + mise à jour logicielle de détection'},
+{k:['nissan','1.2 dig-t','h5f'],t:'Nissan 1.2 DIG-T — chaîne de distribution',o:['Même bloc H5F que Renault : chaîne détendue'],k:['Casse moteur rapportée'],r:'Historique d’entretien décisif'},
+{k:['fiat','alfa','lancia','jeep','multijet','1.3 multijet'],t:'Fiat/Alfa MultiJet — EGR / injecteurs',o:['Encrassement EGR, injecteurs, FAP'],k:['Mode dégradé récurrent'],r:''},
+{k:['mazda','2.2 skyactiv-d','skyactiv-d'],t:'Mazda 2.2 Skyactiv-D — injecteurs / arbre à cames',o:['Injecteurs, usure AAC, dilution huile'],k:['Campagne de surveillance connue'],r:''},
+{k:['volvo','d4','d5'],t:'Volvo D4/D5 — EGR, durits',o:['Refroidisseur EGR, durits de suralimentation'],k:['Surchauffe, perte de puissance'],r:''},
+{k:['tesla'],t:'Tesla — écran MCU / suspension',o:['Mémoire eMMC MCU (Model S/X), bras de suspension'],k:['Rappels officiels ; perte fonctions écran'],r:'Vérifier par VIN Tesla'},
+{k:['opel','corsa','astra'],t:'Opel — rappels divers (portières, allumage, 1.2T)',o:['Selon génération : rappel démarreur/allumage, courroie 1.2T (bloc PSA)'],k:['Selon campagne'],r:'Vérifier par VIN Opel/Vauxhall'}];
+/* ---------- campagnes connues ---------- */
+const CAMPAIGNS=[
+{k:['honda','acura'],n:'Airbags Takata',t:'Rappel mondial majeur : gonfleurs d’airbag défectueux (risque d’éclat métallique). Vérification VIN prioritaire.',u:1},
+{k:['toyota','lexus','citroën','citroen','ds'],n:'Takata (dont C3/DS3 « stop drive »)',t:'Airbags Takata : sur certains modèles arrêt de conduite recommandé tant que non remplacés.',u:1},
+{k:['nissan','bmw','ford','mazda','subaru','mitsubishi','chrysler','jeep','dodge'],n:'Airbags Takata',t:'Vérifier impérativement par VIN — rappel gratuit.',u:1},
+{k:['bmw'],n:'Refroidisseur EGR',t:'Risque de départ de feu : campagnes multiples 2018-2024.',u:1},
+{k:['peugeot','citroën','citroen','ds','opel'],n:'Courroie 1.2 PureTech',t:'Dégradation courroie immergée : contrôles renforcés, extension de garantie Stellantis.',u:1},
+{k:['hyundai','kia'],n:'Moteurs GDI/Theta',t:'Risque casse moteur/incendie : rappels + extensions + logiciel de surveillance.',u:1},
+{k:['volkswagen','vw','audi','skoda','seat'],n:'DSG / TSI / EGR',t:'Mécatronique DSG, chaînes TSI anciennes, rappels EGR : vérification VIN.',u:0},
+{k:['renault','dacia'],n:'1.2 TCe chaîne & 1.5 dCi',t:'Chaîne H5F et injecteurs : prises en charge selon historique.',u:0},
+{k:['ford'],n:'EcoBoost / PowerShift',t:'Durits refroidissement (Kuga/Focus), courroie 1.0 EB, boîte DPS6.',u:0},
+{k:['toyota'],n:'Pompe carburant basse pression',t:'Rappel mondial (plusieurs millions de véhicules).',u:0},
+{k:['tesla'],n:'MCU / suspension',t:'eMMC écran Model S/X, bras de suspension : vérification VIN.',u:0}];
+/* ---------- base juridique ---------- */
+const LEGAL_DB=[
+{r:'Art. 1641 C. civ.',th:'vice',t:'Garantie des défauts cachés de la chose vendue qui la rendent impropre à son usage ou en diminuent tellement l’usage que l’acheteur ne l’aurait pas acquise, ou à moindre prix.'},
+{r:'Art. 1644 C. civ.',th:'vice',t:'Choix entre action rédhibitoire (restitution du véhicule contre remboursement) ou estimatoire (réduction de prix).'},
+{r:'Art. 1645 C. civ.',th:'vice',t:'Le vendeur qui connaissait le vice doit des dommages et intérêts (le vendeur professionnel est présumé connaître les vices — jurisprudence constante Cass. 1re civ. / com.).'},
+{r:'Art. 1648 al. 1 C. civ.',th:'vice',t:'Action à exercer dans les 2 ans de la découverte du vice.'},
+{r:'Art. 1604 C. civ.',th:'conf',t:'Obligation de délivrance conforme : le véhicule livré doit correspondre aux caractéristiques convenues (kilométrage, motorisation, historique, options).'},
+{r:'Art. 1103-1104 C. civ.',th:'contrat',t:'Force obligatoire du contrat et bonne foi dans son exécution.'},
+{r:'Art. 1231-1 C. civ.',th:'contrat',t:'Dommages et intérêts dus à raison de l’inexécution contractuelle (ex. : réparation non réalisée correctement par le garage).'},
+{r:'Art. 1240 C. civ.',th:'delit',t:'Responsabilité délictuelle : tout fait causant un dommage oblige son auteur à réparation (tiers, contrôleur technique…).'},
+{r:'Art. 1245 et s. C. civ.',th:'produit',t:'Responsabilité du fait des produits défectueux : le producteur répond du dommage causé par un défaut de son produit (constructeur).'},
+{r:'Art. L.217-3 et s. C. conso',th:'conf',t:'Garantie légale de conformité due par le vendeur professionnel : le véhicule doit être propre à l’usage habituel et conforme au contrat.'},
+{r:'Art. L.217-7 C. conso',th:'conf',t:'Les défauts apparus dans les 24 mois (neuf) ou 12 mois (occasion) sont présumés exister à la livraison : c’est au professionnel de prouver le contraire.'},
+{r:'Art. L.217-8 et s. C. conso',th:'conf',t:'Droit à réparation/remplacement ; à défaut, réduction de prix ou résolution de la vente.'},
+{r:'Art. L.121-2 et s. C. conso',th:'tromp',t:'Pratique commerciale trompeuse (faux kilométrage, historique falsifié) : sanctions jusqu’à 300 000 € d’amende et 2 ans d’emprisonnement.'},
+{r:'Art. 313-1 C. pén.',th:'penal',t:'Escroquerie : usage d’un faux nom, d’une fausse qualité ou de manœuvres frauduleuses (5 ans / 375 000 €).'},
+{r:'Art. 223-1 C. pén.',th:'penal',t:'Mise en danger d’autrui : violation délibérée d’une obligation particulière de sécurité imposée par la loi ou le règlement.'},
+{r:'Art. 221-6 / 222-19 C. pén.',th:'penal',t:'Homicide ou blessures involontaires résultant d’un manquement à une obligation de sécurité (défaut grave non rappelé, véhicule dangereux maintenu en circulation).'},
+{r:'Art. 145 C. pr. civ.',th:'proc',t:'Référé-expertise : une expertise judiciaire peut être ordonnée avant tout procès s’il existe un motif légitime d’établir les faits.'},
+{r:'Art. 750-1 C. pr. civ.',th:'proc',t:'Tentative de résolution amiable obligatoire avant saisine du tribunal pour les demandes ≤ 5 000 €.'},
+{r:'Art. L.611-1 et s. C. conso',th:'proc',t:'Recours gratuit au médiateur de la consommation après réclamation écrite restée sans effet.'},
+{r:'Règlement (UE) 2023/988 & Rappel Conso',th:'rappel',t:'Sécurité générale des produits : obligation de mesures correctives et rappels, publiés sur rappels-produits.gouv.fr.'}];
+/* ---------- navigation ---------- */
+const NAV_ITEMS=[
+{id:'s-new',l:'Analyse',ic:'car',role:'all'},
+{id:'s-history',l:'Historique',ic:'hist',role:'all'},
+{id:'s-access',l:'Accès',ic:'shield',role:'admin'},
+{id:'s-settings',l:'Réglages',ic:'gear',role:'admin'},
+{id:'s-about',l:'Infos',ic:'info',role:'all'}];
+function renderNav(){const s=sessionValid();$('#nav').innerHTML=NAV_ITEMS.filter(n=>n.role==='all'||(s&&s.role==='admin')).map(n=>`<button data-goto="${n.id}" id="nb-${n.id}">${IC[n.ic]}<span>${n.l}</span></button>`).join('');$$('#nav button').forEach(b=>b.onclick=()=>show(b.dataset.goto))}
+function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));const el=$('#'+id);if(el)el.classList.add('on');$$('#nav button').forEach(b=>b.classList.toggle('on',b.dataset.goto===id));window.scrollTo(0,0);
+if(id==='s-access')renderAccess();if(id==='s-settings')renderSettings();if(id==='s-history')renderHistory()}
+/* ---------- statut connexion ---------- */
+function updateConn(){const c=navigator.connection;const chip=$('#connChip');if(navigator.onLine){chip.className='ok';chip.textContent='En ligne'+((c&&c.effectiveType)?' · '+c.effectiveType.toUpperCase():'')}else{chip.className='warn';chip.textContent='Hors ligne · base locale'}}
+addEventListener('online',updateConn);addEventListener('offline',updateConn);
+/* ---------- login / sessions ---------- */
+$('#logoIco').innerHTML=LOGO_SVG;$('#logoBig').innerHTML='<div class="logo-big">'+LOGO_SVG+'</div>';$('#btnNotif').innerHTML=IC.bell;$('#btnLock').innerHTML=IC.lock;
+$('#btnLock').onclick=()=>{const s=sessionValid();if(s)logout();else show('s-login')};
+$('#btnNotif').onclick=()=>{if(!('Notification'in window))return toast('Notifications non supportées','warn');Notification.requestPermission().then(p=>toast(p==='granted'?'Notifications activées':'Notifications refusées',p==='granted'?'ok':'bad'))};
+$('#btnAdmin').onclick=()=>{modal(`<h3>🔐 Connexion administrateur</h3><label>Mot de passe</label><input type="password" id="adm-pass" placeholder="••••••••" autocomplete="current-password"><button class="btn" id="adm-go">Valider</button><button class="btn sec" onclick="closeModal()">Annuler</button>`);setTimeout(()=>$('#adm-pass').focus(),80);
+$('#adm-go').onclick=()=>{if(v('adm-pass')===ADMIN_KEY){setSession({role:'admin'});closeModal();toast('Bienvenue, administrateur','ok');if('Notification'in window&&Notification.permission==='default')Notification.requestPermission();enterApp()}else toast('Mot de passe incorrect','bad')}};
+$('#btnReq').onclick=()=>show('s-request');
+$('#btnCode').onclick=()=>show('s-code');
+$('#rq-send').onclick=()=>{const n=v('rq-name');if(!n)return toast('Indiquez votre nom','warn');const r={id:uid(),name:n,contact:v('rq-contact'),motif:v('rq-motif'),date:iso(),status:'pending'};DB.requests.push(r);save();toast('Demande envoyée à l’administrateur','ok');notify('Nouvelle demande d’accès',n+' demande l’accès à AutoLitige Expert');showPending(r.id)};
+function showPending(id){show('s-pending');const draw=()=>{const r=DB.requests.find(x=>x.id===id);if(!r)return show('s-login');let h='';
+if(r.status==='pending')h=`<div style="font-size:40px">⏳</div><h3>Demande en attente</h3><p class="sub">L’administrateur a été notifié. Vous recevrez un code d’accès s’il accepte.</p><button class="btn sec" onclick="logout()">Retour</button>`;
+else if(r.status==='denied')h=`<div style="font-size:40px">⛔</div><h3>Demande refusée</h3><p class="sub">L’administrateur a refusé votre demande.</p><button class="btn sec" onclick="logout()">Retour</button>`;
+else h=`<div style="font-size:40px">✅</div><h3>Demande acceptée !</h3><p class="sub">Votre code d’accès :</p><div class="mono">${r.code||''}</div><button class="btn" onclick="activateCode('${r.code}','${esc(r.name).replace(/'/g,"")}')">Activer mon accès maintenant</button>`;
+$('#pend-body').innerHTML=h};draw();window._pendTimer&&clearInterval(window._pendTimer);window._pendTimer=setInterval(()=>{const r=DB.requests.find(x=>x.id===id);if(!r)return;if(r.status!=='pending'){draw();if(r.status==='approved'){notify('Accès accepté','Votre demande AutoLitige Expert a été acceptée. Code : '+r.code)}clearInterval(window._pendTimer)}},1200)}
+$('#code-go').onclick=()=>activateCode(v('code-in').toUpperCase(),v('code-name'));
+function activateCode(code,name){const c=DB.codes.find(x=>x.code===code);if(!c)return toast('Code inconnu','bad');if(c.status==='revoked')return toast('Ce code a été révoqué','bad');
+setSession({role:'user',code:code,name:name||c.name});if(!DB.users.find(u=>u.code===code))DB.users.push({id:uid(),code,name:name||c.name,date:iso(),status:'active'});save();toast('Accès activé ✔','ok');enterApp()}
+function logout(){setSession(null);window._pendTimer&&clearInterval(window._pendTimer);renderNav();show('s-login')}
+function enterApp(){renderNav();show('s-new')}
+/* ---------- ADMIN : gestion des accès ---------- */
+function renderAccess(){const reqs=DB.requests;$('#pendCount').textContent=reqs.filter(r=>r.status==='pending').length;
+$('#reqList').innerHTML=reqs.length?reqs.slice().reverse().map(r=>{const st=r.status==='pending'?'<span class="badge b-warn">En attente</span>':r.status==='approved'?'<span class="badge b-ok">Acceptée</span>':'<span class="badge b-bad">Refusée</span>';
+let act='';if(r.status==='pending')act=`<button class="btn sm ok" onclick="approveRequest('${r.id}')">✔ Accepter</button> <button class="btn sm danger" onclick="denyRequest('${r.id}')">✖ Refuser</button>`;else if(r.status==='approved')act=`<span class="mono" style="display:inline-block;padding:4px 10px">${r.code}</span> <button class="btn sm danger" onclick="revokeRequest('${r.id}')">Révoquer</button>`;
+return `<div class="hist-item" style="cursor:default"><div><b>${esc(r.name)}</b> ${st}<br><span class="sub">${esc(r.contact||'')} · ${new Date(r.date).toLocaleDateString('fr-FR')} · ${esc(r.motif||'')}</span></div><div style="text-align:right;flex-shrink:0">${act}</div></div>`}).join(''):'<p class="sub">Aucune demande.</p>';
+$('#codeList').innerHTML=DB.codes.length?DB.codes.slice().reverse().map(c=>`<div class="hist-item" style="cursor:default"><div><span class="mono">${c.code}</span> — ${esc(c.name||'')}<br><span class="sub">${c.status==='active'?'<span class="badge b-ok">Actif</span>':'<span class="badge b-bad">Révoqué</span>'} · ${new Date(c.date).toLocaleDateString('fr-FR')}</span></div><div>${c.status==='active'?`<button class="btn sm danger" onclick="revokeCode('${c.code}')">Révoquer</button>`:`<button class="btn sm sec" onclick="restoreCode('${c.code}')">Réactiver</button>`}</div></div>`).join(''):'<p class="sub">Aucun code émis.</p>';
+$('#userList').innerHTML=DB.users.length?DB.users.slice().reverse().map(u=>`<div class="hist-item" style="cursor:default"><div><b>${esc(u.name)}</b><br><span class="sub">Code ${u.code} · depuis ${new Date(u.date).toLocaleDateString('fr-FR')}</span></div><div>${u.status==='active'?`<button class="btn sm danger" onclick="blockUser('${u.id}')">Bloquer</button>`:`<button class="btn sm sec" onclick="unblockUser('${u.id}')">Débloquer</button>`}</div></div>`).join(''):'<p class="sub">Aucun utilisateur.</p>'}
+function rnd4(){return Math.random().toString(36).slice(2,6).toUpperCase()}
+function approveRequest(id){const r=DB.requests.find(x=>x.id===id);if(!r)return;const code='AL-'+rnd4()+'-'+rnd4();r.status='approved';r.code=code;DB.codes.push({code,name:r.name,date:iso(),status:'active'});save();toast('Acceptée — code généré : '+code,'ok');notify('Demande acceptée','Code généré pour '+r.name);renderAccess()}
+function denyRequest(id){const r=DB.requests.find(x=>x.id===id);if(!r)return;r.status='denied';save();toast('Demande refusée','warn');renderAccess()}
+function revokeRequest(id){const r=DB.requests.find(x=>x.id===id);if(!r)return;r.status='denied';const c=DB.codes.find(x=>x.code===r.code);if(c)c.status='revoked';const u=DB.users.find(x=>x.code===r.code);if(u)u.status='blocked';save();toast('Accès révoqué','warn');renderAccess()}
+function revokeCode(code){const c=DB.codes.find(x=>x.code===code);if(c)c.status='revoked';const u=DB.users.find(x=>x.code===code);if(u)u.status='blocked';save();toast('Code révoqué','warn');renderAccess()}
+function restoreCode(code){const c=DB.codes.find(x=>x.code===code);if(c)c.status='active';const u=DB.users.find(x=>x.code===code);if(u)u.status='active';save();toast('Code réactivé','ok');renderAccess()}
+function blockUser(id){const u=DB.users.find(x=>x.id===id);if(u)u.status='blocked';const c=DB.codes.find(x=>x.code===u.code);if(c)c.status='revoked';save();toast('Utilisateur bloqué','warn');renderAccess()}
+function unblockUser(id){const u=DB.users.find(x=>x.id===id);if(u)u.status='active';const c=DB.codes.find(x=>x.code===u.code);if(c)c.status='active';save();renderAccess()}
+/* ---------- moteur expert local ---------- */
+function norm(s){return String(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')}
+function analyzeDTC(input){const out=[];const codes=String(input||'').toUpperCase().match(/[PBCU][0-9]{4}/g)||[];
+for(const c of [...new Set(codes)]){const e=DTC_DB[c]||dtcGeneric(c);out.push({code:c,...e,known:!!DTC_DB[c]})}return out}
+function matchSymptoms(text){const t=norm(text);return SYMPTOMS.filter(s=>s.m.some(k=>t.includes(norm(k))))}
+function matchIssues(d){const hay=norm(d.marque+' '+d.modele+' '+d.motor);return BRAND_ISSUES.filter(i=>i.k.some(k=>hay.includes(norm(k))))}
+function matchCampaigns(d){const hay=norm(d.marque+' '+d.modele);return CAMPAIGNS.filter(c=>c.k.some(k=>hay.includes(norm(k))))}
+function legalEngine(d){const p=d.parties,f=d.faits;const arts=[],liab=[],notes=[];
+const sale=p.some(x=>x.includes('Vendeur'));
+if(sale){arts.push(LEGAL_DB.find(l=>l.r.includes('1641')),LEGAL_DB.find(l=>l.r.includes('1644')),LEGAL_DB.find(l=>l.r.includes('1648')))}
+if(p.includes('Vendeur professionnel')){arts.push(LEGAL_DB.find(l=>l.r.includes('L.217-3')),LEGAL_DB.find(l=>l.r.includes('L.217-7')),LEGAL_DB.find(l=>l.r.includes('L.217-8')),LEGAL_DB.find(l=>l.r.includes('1645')));
+liab.push({who:'Vendeur professionnel',lv:f.includes('Défaut non signalé à la vente')?'Élevée':'Modérée',b:['Vices cachés : présomption de connaissance du vice par le professionnel (jurisprudence constante) → dommages et intérêts en plus de la résolution/réduction (art. 1641 et 1645 C. civ.)','Garantie légale de conformité : défauts présumés antérieurs à la vente s’ils apparaissent sous 24 mois (neuf) / 12 mois (occasion) (L.217-7 C. conso)','Obligation de délivrance conforme et devoir d’information (art. 1604, 1104 C. civ.)']})}
+if(p.includes('Vendeur particulier')){liab.push({who:'Vendeur particulier',lv:f.includes('Défaut non signalé à la vente')?'Modérée':'Faible',b:['Garantie des vices cachés applicable (1641 C. civ.) mais sans présomption de connaissance : l’acheteur doit prouver le vice, son antériorité et, pour des dommages et intérêts, la connaissance du vendeur','Vente « en l’état » : n’exonère pas des vices cachés, mais rend la preuve plus exigeante']})}
+if(p.includes('Garage / réparateur')){liab.push({who:'Garage / réparateur',lv:f.some(x=>['Intervention garage récente inefficace','Panne récurrente déjà réparée'].includes(x))?'Élevée':'À établir',b:['Obligation de résultat sur la réparation confiée (art. 1231-1 C. civ.) : une panne identique réapparaissant après intervention présume l’inexécution','Devoir de diagnostic et de conseil : anomalies visibles lors de l’intervention devant être signalées']})}
+if(p.includes('Constructeur / importateur')){liab.push({who:'Constructeur / importateur',lv:f.includes('Rappel non réalisé')?'Élevée':'Modérée',b:['Responsabilité du fait des produits défectueux (art. 1245 et s. C. civ.)','Obligation de rappel et mesures correctives gratuites (Règl. UE 2023/988, Rappel Conso)','Défaut de série connu non traité = faute engageant aussi la responsabilité du réseau']})}
+if(p.includes('Contrôleur technique')){liab.push({who:'Centre de contrôle technique',lv:'À établir',b:['Responsabilité délictuelle (1240 C. civ.) en cas de défaut contrôlable non détecté, sous réserve de son caractère décelable le jour du contrôle']})}
+if(f.includes('Kilométrage suspect')){arts.push(LEGAL_DB.find(l=>l.r.includes('313-1')),LEGAL_DB.find(l=>l.r.includes('L.121-2')));notes.push('Fausse déclaration de kilométrage : pratique commerciale trompeuse (L.121-2 C. conso) et escroquerie (313-1 C. pén.) — plainte possible.')}
+if(f.includes('Rappel non réalisé'))notes.push('Un rappel constructeur connu et non exécuté renforce fortement la responsabilité du constructeur/importateur et peut caractériser une mise en danger (223-1 C. pén.) en cas de risque sécuritaire.');
+if(f.includes('Défaut non signalé à la vente'))notes.push('La dissimulation d’un défaut connu caractérise la mauvaise foi (1645 C. civ.) et, en présence de manœuvres, l’escroquerie.');
+if(f.includes('Entretien non à jour'))notes.push('Point de vigilance : un entretien non justifiable peut être opposé à l’acheteur et conduire à un partage de responsabilité.');
+if(f.includes('Panne récurrente déjà réparée'))notes.push('Des réparations répétées infructueuses confortent la résolution de la vente aux torts du vendeur (L.217-8 et s.) et l’inexécution du réparateur.');
+if(f.includes('Immobilisation prolongée'))notes.push('L’immobilisation prolongée ouvre droit à indemnisation du préjudice de jouissance (jurisprudence constante).');
+return{arts:arts.filter(Boolean),liab,notes}}
+function actionsBuilder(d,legal){const a=['Constituer le dossier : facture d’achat, certificat de cession, contrôles techniques, factures d’entretien, impressions des codes DTC, photos/vidéos des symptômes, échanges écrits.'];
+if(d.parties.some(x=>x.includes('Vendeur')))a.push('Adressez une mise en demeure par LRAR au vendeur (garantie des vices cachés art. 1641 C. civ. / conformité L.217-3 C. conso) en précisant résolution ou réduction de prix.');
+if(d.parties.includes('Garage / réparateur'))a.push('Mise en demeure LRAR du garage au titre de l’obligation de résultat (1231-1 C. civ.) : reprise de la réparation ou remboursement.');
+if(d.parties.includes('Constructeur / importateur'))a.push('Signalement au constructeur + vérification des rappels par VIN (gratuit) ; signalement sur rappels-produits.gouv.fr si défaut sécuritaire.');
+a.push('À défaut d’accord amiable : conciliateur de justice (gratuit) ou médiateur de la consommation (L.611-1 C. conso).');
+a.push('En cas de contestation technique : expertise amiable contradictoire, sinon référé-expertise judiciaire (art. 145 C. pr. civ.).');
+a.push('Action judiciaire : tribunal judiciaire/proximité selon montant ; pour les demandes ≤ 5 000 €, tentative amiable préalable obligatoire (750-1 C. pr. civ.).');
+if(d.faits.includes('Kilométrage suspect'))a.push('Dépôt de plainte possible (escroquerie, art. 313-1 C. pén.) et signalement DGCCRF / SignalConso.');
+a.push('Prévenir votre protection juridique (assurance) : prise en charge fréquente des frais d’expertise et d’avocat.');
+return a}
+/* ---------- IA ---------- */
+const FREE_MODELS=['openai','mistral','deepseek','llama','qwen-coder','gemini'];
+function buildPrompt(d){return `Tu es un expert automobile senior doublé d'un juriste français. Analyse ce litige automobile et réponds en français, structuré avec des titres ##, des listes, sans avertissements superflus.
+VÉHICULE : ${d.marque||'?'} ${d.modele||''} ${d.annee||''} — moteur ${d.motor||'?'} — ${d.km||'?'} km. Achat : ${d.achat}.
+SYMPTÔMES : ${d.symptomes||'non précisés'}
+CODES DTC : ${d.dtc||'aucun'}
+HISTORIQUE : ${d.historique||'non renseigné'}
+PARTIES EN CAUSE : ${d.parties.join(', ')||'aucune précisée'}
+FAITS : ${d.faits.join(', ')||'aucun coché'}
+Fournis impérativement :
+## 1. Origines probables de la panne (hiérarchisées avec justification technique)
+## 2. Conséquences techniques et sécuritaires
+## 3. Interprétation des codes DTC et cohérence avec les symptômes
+## 4. Rappels / TSB / défauts connus (NHTSA, Rappel Conso, Safety Gate, constructeur)
+## 5. Analyse juridique et responsabilités (citer précisément : Code civil art. 1641, 1644, 1645, 1648, 1604, 1231-1, 1240, 1245 et s. ; Code consommation L.217-3 et s., L.217-7, L.121-2 ; Code pénal 313-1, 223-1 ; CPC art. 145, 750-1) — évaluer la responsabilité de chaque partie (élevée/modérée/faible) avec fondement
+## 6. Stratégie et recommandations pratiques (ordre chronologique)`}
+function tSignal(ms){try{return AbortSignal.timeout?AbortSignal.timeout(ms):undefined}catch(e){return undefined}}
+async function pollinations(prompt,model){const body={messages:[{role:'system',content:'Expert automobile et juriste français, réponses structurées et précises.'},{role:'user',content:prompt}],model,seed:Math.floor(Math.random()*1e6)};
+const r=await fetch('https://text.pollinations.ai/',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body),signal:tSignal(80000)});
+if(!r.ok)throw new Error('HTTP '+r.status);const t=await r.text();if(t.length<150)throw new Error('réponse trop courte');return t}
+async function runAIChain(d,onp){const p=buildPrompt(d);
+for(let i=0;i<FREE_MODELS.length;i++){const m=FREE_MODELS[i];onp&&onp(i+1,m,FREE_MODELS.length);
+try{const t=await pollinations(p,m);return{model:m,text:t}}catch(e){}}return null}
+async function callGemini(prompt,key){const models=['gemini-2.5-flash','gemini-2.0-flash','gemini-1.5-flash'];
+for(const m of models){try{const r=await fetch('https://generativelanguage.googleapis.com/v1beta/models/'+m+':generateContent?key='+encodeURIComponent(key),{method:'POST',headers:{'Content-Type':'application/json'},signal:tSignal(60000),body:JSON.stringify({contents:[{parts:[{text:prompt}]}],systemInstruction:{parts:[{text:'Expert automobile et juriste français.'}]},generationConfig:{temperature:0.35}})});
+if(r.ok){const j=await r.json();const t=(j.candidates?.[0]?.content?.parts||[]).map(p=>p.text||'').join('');if(t)return{model:'Gemini ('+m+')',text:t}}}catch(e){}}return null}
+/* ---------- NHTSA (rappels officiels, API gratuite) ---------- */
+async function nhtsaFetch(d){if(!d.marque||!d.modele||!d.annee||!navigator.onLine)return null;
+try{const r=await fetch('https://api.nhtsa.gov/recalls/recallsByVehicle?make='+encodeURIComponent(d.marque)+'&model='+encodeURIComponent(d.modele)+'&model_year='+encodeURIComponent(d.annee),{signal:tSignal(12000)});
+if(!r.ok)return null;const j=await r.json();return(j.results||[]).slice(0,6).map(x=>({comp:x.Component,summary:(x.Summary||'').slice(0,260),campaign:x.NHTSACampaignNumber}))}catch(e){return null}}
+/* ---------- construction du rapport ---------- */
+function mdLite(s){let h=esc(s);h=h.replace(/^###\s?(.*)$/gm,'<h4>$1</h4>').replace(/^##\s?(.*)$/gm,'<h4>$1</h4>').replace(/^#\s?(.*)$/gm,'<h4>$1</h4>').replace(/\*\*(.+?)\*\*/g,'<b>$1</b>');
+h=h.split('\n').map(l=>/^\s*[-•]\s+/.test(l)?'<li>'+l.replace(/^\s*[-•]\s+/,'')+'</li>':l).join('\n');
+h=h.replace(/(?:<li>[\s\S]*?<\/li>\n?)+/g,m=>'<ul>'+m+'</ul>');h=h.replace(/\n{2,}/g,'</p><p>').replace(/\n/g,'<br>');return '<p>'+h+'</p>'}
+function buildReport(d,ai,nhtsa){
+const dtcs=analyzeDTC(d.dtc),symps=matchSymptoms(d.symptomes),issues=matchIssues(d),camps=matchCampaigns(d),legal=legalEngine(d),actions=actionsBuilder(d,legal);
+let html='',txt='RAPPORT D’ANALYSE — AUTOLITIGE EXPERT\n'+new Date().toLocaleString('fr-FR')+'\n========================================\n';
+const sec=(t,icon,h,t2)=>{html+=`<div class="sec-title">${IC[icon]||''} ${t}</div><div class="card">${h}</div>`;txt+='\n\n### '+t+'\n'+t2+'\n'};
+/* contexte */
+sec('Contexte déclaré','car',
+`<div class="kv"><span>Véhicule</span><b>${esc(d.marque)} ${esc(d.modele)} ${esc(d.annee)}</b></div><div class="kv"><span>Motorisation</span><b>${esc(d.motor||'—')}</b></div><div class="kv"><span>Kilométrage</span><b>${esc(d.km||'—')}</b></div><div class="kv"><span>Achat</span><b>${esc(d.achat)}</b></div><div class="kv"><span>Symptômes</span><b style="text-align:left;font-weight:400">${esc(d.symptomes)}</b></div>`,
+`Véhicule ${d.marque} ${d.modele} ${d.annee} — ${d.motor||''} — ${d.km||''}\nSymptômes : ${d.symptomes}`);
+/* DTC */
+if(dtcs.length){sec('Interprétation des codes DTC','dtc',dtcs.map(c=>`<div style="margin-bottom:10px"><b>${c.code}</b> ${c.known?'':'<span class="badge b-mut">définition constructeur</span>'} <span class="badge ${c.s===3?'b-bad':c.s===2?'b-warn':'b-info'}">${c.s===3?'CRITIQUE':c.s===2?'IMPORTANT':'MINEUR'}</span><div class="sub" style="margin-top:3px">${esc(c.d)}</div><div class="sub">Origines : ${c.c.map(esc).join(' · ')}</div><div class="sub">Conséquences : ${c.k.map(esc).join(' · ')}</div></div>`).join(''),
+dtcs.map(c=>c.code+' — '+c.d+' | causes : '+c.c.join('; ')).join('\n'))}
+/* origines probables */
+const orig=[...new Map([...symps.map(s=>({t:s.t,d:s.o.join(' ; ')})),...issues.map(i=>({t:i.t,d:i.o.join(' ; ')}))].map(x=>[x.t,x])).values()];
+sec('Origines probables de la panne','warn',orig.length?orig.map(o=>`<p><b>▸ ${esc(o.t)}</b><br><span class="sub">${esc(o.d)}</span></p>`).join(''):'<p class="sub">Aucune correspondance directe dans la base locale — l’analyse IA (en ligne) et les codes DTC affineront le diagnostic.</p>',
+orig.map(o=>'- '+o.t+' : '+o.d).join('\n')||'Non déterminé localement');
+/* conséquences */
+const cons=[...new Set([...symps.flatMap(s=>s.k),...issues.flatMap(i=>i.k),...dtcs.flatMap(c=>c.k)])];
+sec('Conséquences de la panne','car',cons.length?'<ul>'+cons.map(c=>'<li>'+esc(c)+'</li>').join('')+'</ul>':'<p class="sub">À préciser selon diagnostic.</p>',cons.map(c=>'- '+c).join('\n'));
+/* défauts connus */
+if(issues.length)sec('Défauts récurrents connus pour ce véhicule','recall',issues.map(i=>`<p><b>${esc(i.t)}</b><br><span class="sub">${esc(i.o.join(' · '))}${i.r?'<br>✔ '+esc(i.r):''}</span></p>`).join(''),issues.map(i=>'- '+i.t+' : '+i.o.join('; ')).join('\n'));
+/* rappels */
+let rh='',rt='';
+if(camps.length)rh+=camps.map(c=>`<p>${c.u?'<span class="badge b-bad">URGENT SÉCURITÉ</span>':'<span class="badge b-info">Campagne</span>'} <b>${esc(c.n)}</b><br><span class="sub">${esc(c.t)}</span></p>`).join('');
+if(nhtsa&&nhtsa.length){rh+='<h4 style="margin-top:8px">Rappels NHTSA (source officielle, en ligne)</h4>'+nhtsa.map(n=>`<p class="sub"><b>${esc(n.comp)}</b> — ${esc(n.summary)} ${n.campaign?'['+esc(n.campaign)+']':''}</p>`).join('')}
+const q=encodeURIComponent((d.marque+' '+d.modele).trim());
+rh+=`<div class="chips src"><span class="chip">🔗 <a href="https://www.nhtsa.gov/recalls" target="_blank" rel="noopener">Vérif VIN NHTSA</a></span><span class="chip">🔗 <a href="https://rappels-produits.gouv.fr/recherche?q=${q}" target="_blank" rel="noopener">Rappel Conso</a></span><span class="chip">🔗 <a href="https://ec.europa.eu/safety-gate" target="_blank" rel="noopener">EU Safety Gate</a></span></div>`;
+rt=(camps.map(c=>'- '+c.n+' : '+c.t).join('\n')||'Aucune campagne locale connue')+(nhtsa&&nhtsa.length?'\n- NHTSA : '+nhtsa.map(n=>n.comp).join(' / '):'')+'\nVérification VIN recommandée (gratuit chez le constructeur).';
+sec('Campagnes de rappel applicables','recall',rh,rt);
+/* juridique */
+sec('Analyse juridique — fondements','gavel',legal.arts.map(a=>`<p><b>${esc(a.r)}</b><br><span class="sub">${esc(a.t)}</span></p>`).join(''),legal.arts.map(a=>'- '+a.r+' : '+a.t).join('\n'));
+sec('Responsabilité des protagonistes','gavel',legal.liab.map(l=>`<p><b>${esc(l.who)}</b> — <span class="badge ${l.lv==='Élevée'?'b-bad':l.lv==='Modérée'?'b-warn':l.lv==='Faible'?'b-ok':'b-mut'}">${l.lv}</span></p><ul>${l.b.map(b=>'<li class="sub">'+esc(b)+'</li>').join('')}</ul>`).join('')+(legal.notes.length?'<div class="sub" style="margin-top:8px">⚠ '+legal.notes.map(esc).join('<br>⚠ ')+'</div>':''),
+legal.liab.map(l=>'- '+l.who+' ['+l.lv+']\n  • '+l.b.join('\n  • ')).join('\n')+'\n'+legal.notes.map(n=>'⚠ '+n).join('\n'));
+sec('Recommandations et stratégie','save','<ol style="padding-left:18px">'+actions.map(a=>'<li class="sub">'+esc(a)+'</li>').join('')+'</ol>',actions.map((a,i)=>(i+1)+'. '+a).join('\n'));
+/* IA */
+if(ai){html+=`<div class="sec-title">${IC.brain} Contribution IA <span class="badge b-info">${esc(ai.model)}</span></div><div class="card ai-box">${mdLite(ai.text)}</div>`;txt+='\n\n### CONTRIBUTION IA ('+ai.model+')\n'+ai.text}
+else{html+=`<div class="sec-title">${IC.brain} Contribution IA</div><div class="card"><p class="sub">IA en ligne indisponible ou désactivée — ce rapport repose sur le moteur expert local (fonctionne 100 % hors ligne). Réactivez l’IA dans Réglages ou renseignez une clé Gemini.</p></div>`;txt+='\n\n### CONTRIBUTION IA\nIndisponible (hors ligne ou IA désactivée) — moteur expert local uniquement.'}
+txt+='\n\n— Rapport généré par AutoLitige Expert. Document informatif, ne remplace pas un conseil juridique. —';
+return{html,txt,aiModel:ai?ai.model:'local'}}
+/* ---------- analyse ---------- */
+$('#btnAnalyze').onclick=async()=>{const d={marque:v('f-marque'),modele:v('f-modele'),annee:v('f-annee'),motor:v('f-motor'),km:v('f-km'),achat:$('#f-achat').value,symptomes:v('f-symptomes'),dtc:v('f-dtc'),historique:v('f-historique'),parties:$$('input[name=parties]:checked').map(i=>i.value),faits:$$('input[name=faits]:checked').map(i=>i.value)};
+if(!d.marque&&!d.symptomes)return toast('Indiquez au moins la marque ou les symptômes','warn');
+$('#btnAnalyze').disabled=true;const st=$('#aiStatusCard'),stx=$('#aiStatus');st.style.display='block';
+let ai=null;
+if(DB.settings.aiOnline&&navigator.onLine){stx.textContent='Interrogation des IA…';
+try{if(DB.settings.useGemini&&DB.settings.geminiKey){stx.textContent='IA Gemini (votre clé API)…';ai=await callGemini(buildPrompt(d),DB.settings.geminiKey)}
+else ai=await runAIChain(d,(i,m,n)=>stx.textContent='IA gratuite '+i+'/'+n+' : '+m+'…')}catch(e){}
+if(!ai)stx.textContent='IA en ligne indisponible → moteur expert local seul.'}
+else stx.textContent='Mode hors ligne / IA désactivée → moteur expert local.';
+stx.textContent='Interrogation des rappels officiels (NHTSA)…';
+const nhtsa=await nhtsaFetch(d);
+stx.textContent='Construction du rapport…';
+const rep=buildReport(d,ai,nhtsa);
+const rec={id:uid(),date:iso(),data:d,aiModel:rep.aiModel,html:rep.html,txt:rep.txt};
+DB.analyses.unshift(rec);save();
+$('#reportBox').innerHTML=rep.html;window._curRep=rec;
+st.style.display='none';$('#btnAnalyze').disabled=false;show('s-report');toast('Analyse terminée','ok')};
+$('#rep-txt').onclick=()=>{if(window._curRep)dl('rapport-autolitige-'+Date.now()+'.txt',window._curRep.txt,'text/plain;charset=utf-8')};
+$('#rep-print').onclick=()=>window.print();
+$('#rep-share').onclick=async()=>{const r=window._curRep;if(!r)return;const body='Rapport AutoLitige Expert — '+r.data.marque+' '+r.data.modele+'\n'+r.txt.slice(0,1800);
+try{if(navigator.share)await navigator.share({title:'Rapport AutoLitige Expert',text:body});else{await navigator.clipboard.writeText(body);toast('Rapport copié dans le presse-papiers','ok')}}catch(e){}};
+/* ---------- historique ---------- */
+function renderHistory(){const l=$('#histList');l.innerHTML=DB.analyses.length?DB.analyses.map(a=>`<div class="hist-item" onclick="openAnalysis('${a.id}')"><div><b>${esc(a.data.marque)} ${esc(a.data.modele)}</b> <span class="badge b-info">${esc(a.aiModel)}</span><br><span class="sub">${new Date(a.date).toLocaleString('fr-FR')} — ${esc(a.data.symptomes.slice(0,70))}…</span></div><button class="btn sm danger" onclick="event.stopPropagation();delAnalysis('${a.id}')">✖</button></div>`).join(''):'<p class="sub">Aucune analyse enregistrée.</p>'}
+function openAnalysis(id){const a=DB.analyses.find(x=>x.id===id);if(!a)return;window._curRep=a;$('#reportBox').innerHTML=a.html;show('s-report')}
+function delAnalysis(id){DB.analyses=DB.analyses.filter(x=>x.id!==id);save();renderHistory();toast('Analyse supprimée','warn')}
+/* ---------- réglages / sauvegarde ---------- */
+function renderSettings(){$('#st-online').checked=DB.settings.aiOnline;$('#st-gem').checked=DB.settings.useGemini;$('#st-key').value=DB.settings.geminiKey;
+$('#bk-info').textContent='Dernière sauvegarde : '+new Date(DB.savedAt).toLocaleString('fr-FR')+' · '+DB.analyses.length+' analyse(s), '+DB.users.length+' utilisateur(s), '+DB.codes.length+' code(s). Stockage local automatique à chaque action.'}
+$('#st-save').onclick=()=>{DB.settings.aiOnline=$('#st-online').checked;DB.settings.useGemini=$('#st-gem').checked;DB.settings.geminiKey=v('st-key');save();toast('Réglages enregistrés','ok')};
+$('#bk-exp').onclick=()=>dl('autolitige-sauvegarde-'+new Date().toISOString().slice(0,10)+'.json',JSON.stringify(DB,null,1),'application/json');
+$('#bk-imp').onclick=()=>$('#fileImport').click();
+$('#fileImport').onchange=e=>{const f=e.target.files[0];if(!f)return;const rd=new FileReader();rd.onload=()=>{try{const j=JSON.parse(rd.result);if(!j.requests||!j.codes)throw 0;DB=j;save();toast('Sauvegarde importée ✔','ok');renderNav();enterApp()}catch(x){toast('Fichier invalide','bad')}};rd.readAsText(f);e.target.value=''};
+$('#bk-reset').onclick=()=>{modal('<h3>🗑️ Réinitialiser l’application ?</h3><p class="sub">Toutes les données locales seront effacées (analyses, accès, réglages). Exportez une sauvegarde avant.</p><button class="btn danger" id="rz-yes">Oui, tout effacer</button><button class="btn sec" onclick="closeModal()">Annuler</button>');
+$('#rz-yes').onclick=()=>{localStorage.removeItem(LS_KEY);localStorage.removeItem(SESS_KEY);location.reload()}};
+/* ---------- kit de déploiement ---------- */
+async function iconPNG(size){return new Promise(res=>{const img=new Image();img.onload=()=>{const c=document.createElement('canvas');c.width=c.height=size;const x=c.getContext('2d');x.drawImage(img,0,0,size,size);c.toBlob(b=>res(b),'image/png')};img.src=LOGO_URI()})}
+$('#kit-btn').onclick=async()=>{dl('index.html','<!DOCTYPE html>\n'+document.documentElement.outerHTML,'text/html');
+dl('sw.js',SW_SRC,'text/javascript');dl('manifest.webmanifest',JSON.stringify(MANIFEST,null,1),'application/manifest+json');
+dl('icon-512.png',await iconPNG(512),'image/png');dl('icon-192.png',await iconPNG(192),'image/png');
+toast('Kit téléchargé (5 fichiers) — placez-les dans le même dossier sur votre hébergement','ok')};
+/* ---------- manifest & service worker intégrés ---------- */
+const MANIFEST={name:'AutoLitige Expert — Diagnostic pannes & litiges auto',short_name:'AutoLitige',start_url:'./index.html',scope:'./',display:'standalone',orientation:'portrait',background_color:'#0b1220',theme_color:'#0b1220',lang:'fr',description:'Analyse de litiges automobiles : origines de pannes, codes DTC, rappels NHTSA/Rappel Conso/Safety Gate, responsabilité selon le droit français. 100 % hors ligne.',icons:[{src:'icon-192.png',sizes:'192x192',type:'image/png',purpose:'any'},{src:'icon-512.png',sizes:'512x512',type:'image/png',purpose:'any maskable'}]};
+const SW_SRC=`const CACHE='autolitige-v1';
+self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(['./','./index.html','./manifest.webmanifest','./icon-192.png','./icon-512.png']).catch(()=>null)));self.skipWaiting()});
+self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==CACHE).map(k=>caches.delete(k)))));self.clients.claim()});
+const NOCACHE=['api.nhtsa.gov','text.pollinations.ai','generativelanguage.googleapis.com','rappels-produits.gouv.fr'];
+self.addEventListener('fetch',e=>{const u=new URL(e.request.url);
+if(e.request.method!=='GET'||NOCACHE.some(h=>u.hostname.includes(h)))return;
+e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).then(res=>{if(res.ok&&u.origin===location.origin){const cp=res.clone();caches.open(CACHE).then(c=>c.put(e.request,cp))}return res}).catch(()=>caches.match('./index.html'))))});`;
+if('serviceWorker'in navigator&&location.protocol.startsWith('http')){navigator.serviceWorker.register('./sw.js').catch(()=>{})}
+/* ---------- synchro multi-onglets & init ---------- */
+addEventListener('storage',e=>{if(e.key===LS_KEY){try{DB=JSON.parse(e.key?e.newValue:LS_KEY)||DB}catch(x){}if($('#s-access').classList.contains('on'))renderAccess()}});
+$('#f-marque').setAttribute('list','marques');
+$('#marques').innerHTML=['Abarth','Alfa Romeo','Audi','BMW','Citroën','Cupra','Dacia','DS','Fiat','Ford','Honda','Hyundai','Jaguar','Jeep','Kia','Land Rover','Lexus','Mazda','Mercedes','MG','Mini','Mitsubishi','Nissan','Opel','Peugeot','Porsche','Renault','Seat','Skoda','Smart','Suzuki','Tesla','Toyota','Volkswagen','Volvo'].map(m=>'<option value="'+m+'">').join('');
+updateConn();setInterval(updateConn,5000);
+const s0=sessionValid();renderNav();s0?enterApp():show('s-login');
+</script>
+</body>
+</html>
