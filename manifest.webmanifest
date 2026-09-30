@@ -1,5 +1,5 @@
 {
- "name": "AutoLitige Expert — Diagnostic pannes & litiges auto",
+ "name": "AutoLitige Expert v2 — Pannes connues, rappels & litiges auto",
  "short_name": "AutoLitige",
  "start_url": "./index.html",
  "scope": "./",
@@ -8,7 +8,7 @@
  "background_color": "#0b1220",
  "theme_color": "#0b1220",
  "lang": "fr",
- "description": "Analyse de litiges automobiles : origines de pannes, codes DTC, rappels NHTSA/Rappel Conso/Safety Gate, responsabilité selon le droit français. 100 % hors ligne.",
+ "description": "Base technique marques/modèles/motorisations, pannes connues, campagnes de rappel, codes DTC et droit français. Hors ligne.",
  "icons": [
   {"src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any"},
   {"src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable"}
