@@ -4,20 +4,24 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0b1220">
-<meta name="description" content="AutoLitige Expert v2.1 — base technique marques/modèles/motorisations, pannes connues, campagnes de rappel, codes DTC et droit français. Hors ligne.">
-<title>AutoLitige Expert v2.1 — Pannes connues, rappels & litiges auto</title>
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="description" content="AutoLitige Expert v2.2 — base technique marques/modèles/motorisations, pannes connues, campagnes de rappel, codes DTC et droit français. Hors ligne.">
+<title>AutoLitige Expert v2.2 — Pannes connues, rappels & litiges auto</title>
 <link rel="manifest" href="./manifest.webmanifest">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='112' fill='%232563eb'/%3E%3Cpath d='M96 300c0-10 6-18 16-20l40-8 34-62c8-14 22-22 38-22h84c16 0 30 8 38 22l34 62 40 8c10 2 16 10 16 20v52c0 8-6 14-14 14h-20c-8 0-14-6-14-14v-10H166v10c0 8-6 14-14 14h-20c-8 0-14-6-14-14z' fill='%23fff'/%3E%3Ccircle cx='196' cy='316' r='26' fill='%230b1220'/%3E%3Ccircle cx='316' cy='316' r='26' fill='%230b1220'/%3E%3C/svg%3E">
 <style>
 :root{--bg:#0b1220;--card:#121a2e;--card2:#0e1626;--bd:#1e2a45;--tx:#e7ecf5;--mut:#93a1bd;--ac:#3b82f6;--ac2:#8b5cf6;--ok:#22c55e;--warn:#f59e0b;--bad:#ef4444;--r:14px}
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;min-height:100dvh}
+body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--tx);min-height:100vh}
 header{position:sticky;top:0;z-index:40;display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:rgba(11,18,32,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--bd)}
 .brand{display:flex;gap:10px;align-items:center}.brand svg{width:34px;height:34px}.brand b{font-size:15px}.brand small{display:block;font-size:10.5px;color:var(--mut)}
 #connChip{padding:1px 7px;border-radius:20px;font-size:10px;font-weight:600}#connChip.ok{background:#12331f;color:#4ade80}#connChip.warn{background:#3a2a10;color:#fbbf24}
 .hacts{display:flex;gap:8px}
 .ibtn{background:var(--card);border:1px solid var(--bd);color:var(--tx);width:38px;height:38px;border-radius:11px;display:flex;align-items:center;justify-content:center;cursor:pointer}
 .ibtn svg{width:19px;height:19px}
+#errBanner{display:none;background:#3b1518;border:1px solid #7f1d1d;color:#fecaca;font-size:12px;padding:8px 14px}
 main{max-width:880px;margin:0 auto;padding:14px 14px 96px}
 .screen{display:none}.screen.on{display:block;animation:fade .18s}
 @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1}}
@@ -79,23 +83,24 @@ footer{color:var(--mut);font-size:11px;text-align:center;padding:16px;line-heigh
 </head>
 <body>
 <header>
- <div class="brand"><span id="logoIco"></span><div><b>AutoLitige Expert v2.1</b><small id="connChip" class="warn">Hors ligne</small></div></div>
+ <div class="brand"><span id="logoIco"></span><div><b>AutoLitige Expert v2.2</b><small id="connChip" class="warn">Hors ligne</small></div></div>
  <div class="hacts"><button class="ibtn" id="btnNotif"></button><button class="ibtn" id="btnLock"></button></div>
 </header>
+<div id="errBanner"></div>
 <main>
 
 <section class="screen" id="s-login">
- <div class="center"><span id="logoBig"></span><h1>AutoLitige Expert v2.1</h1>
+ <div class="center"><span id="logoBig"></span><h1>AutoLitige Expert v2.2</h1>
  <p class="sub">Base technique marques → modèles → motorisations<br>Pannes connues · Campagnes de rappel · Codes DTC · Droit français<br><b>100 % fonctionnel hors ligne</b></p></div>
  <div class="card" style="margin-top:16px">
  <button class="btn" id="btnAdmin">🔐 Connexion Administrateur</button>
- <button class="btn sec" id="btnCode">🎫 J'ai un code d'accès</button>
+ <button class="btn sec" id="btnCode">🎫 J&#39;ai un code d&#39;accès</button>
  <button class="btn sec" id="btnReq">📨 Demander un accès</button></div>
- <footer>Base locale intégrée : défauts récurrents par moteur,<br>rappels (NHTSA, Rappel Conso, Safety Gate), Code civil/conso/pénal.</footer>
+ <footer><span id="selftest">Autocontrôle en cours…</span><br>Base locale : défauts récurrents par moteur, rappels (NHTSA, Rappel Conso, Safety Gate), droit français.</footer>
 </section>
 
-<section class="screen" id="s-request"><div class="card"><h3>📨 Demande d'accès</h3>
- <p class="sub">Votre demande sera notifiée à l'administrateur (accepter / refuser / révoquer).</p>
+<section class="screen" id="s-request"><div class="card"><h3>📨 Demande d&#39;accès</h3>
+ <p class="sub">Votre demande sera notifiée à l&#39;administrateur (accepter / refuser / révoquer).</p>
  <label>Nom / Prénom ou Raison sociale *</label><input id="rq-name">
  <label>Contact</label><input id="rq-contact">
  <label>Motif</label><textarea id="rq-motif"></textarea>
@@ -104,10 +109,10 @@ footer{color:var(--mut);font-size:11px;text-align:center;padding:16px;line-heigh
 
 <section class="screen" id="s-pending"><div class="card center"><div id="pend-body"></div></div></section>
 
-<section class="screen" id="s-code"><div class="card"><h3>🎫 Activer un code d'accès</h3>
- <label>Code fourni par l'administrateur</label><input id="code-in" placeholder="AL-XXXX-XXXX" style="text-transform:uppercase">
+<section class="screen" id="s-code"><div class="card"><h3>🎫 Activer un code d&#39;accès</h3>
+ <label>Code fourni par l&#39;administrateur</label><input id="code-in" placeholder="AL-XXXX-XXXX" style="text-transform:uppercase">
  <label>Votre nom</label><input id="code-name">
- <button class="btn" id="code-go">Activer l'accès</button>
+ <button class="btn" id="code-go">Activer l&#39;accès</button>
  <button class="btn sec" onclick="show('s-login')">Retour</button></div></section>
 
 <section class="screen" id="s-lib">
@@ -132,10 +137,10 @@ footer{color:var(--mut);font-size:11px;text-align:center;padding:16px;line-heigh
   <div id="kb-hint"></div>
   <div class="row"><div><label>Année</label><input id="f-annee" type="number" placeholder="2016"></div>
   <div><label>Kilométrage</label><input id="f-km" placeholder="98 000 km"></div></div>
-  <label>Contexte d'achat</label>
+  <label>Contexte d&#39;achat</label>
   <select id="f-achat"><option>Occasion — vendeur professionnel</option><option>Occasion — particulier</option><option>Véhicule neuf</option><option>Achat ancien / hors litige de vente</option></select>
   <label>Symptômes décrits *</label>
-  <textarea id="f-symptomes" placeholder="Ex. : claquement à froid, perte de puissance, voyant pression d'huile…"></textarea>
+  <textarea id="f-symptomes" placeholder="Ex. : claquement à froid, perte de puissance, voyant pression d&#39;huile…"></textarea>
   <label>Codes DTC relevés</label><input id="f-dtc" placeholder="P0016, P0300, U0100…">
   <label>Historique / entretien / réparations déjà faites</label>
   <textarea id="f-historique"></textarea>
@@ -155,7 +160,7 @@ footer{color:var(--mut);font-size:11px;text-align:center;padding:16px;line-heigh
   <label class="check"><input type="checkbox" name="faits" value="Entretien non à jour"> Entretien non à jour</label>
   <label class="check"><input type="checkbox" name="faits" value="Véhicule accidenté"> Véhicule accidenté</label>
   <label class="check"><input type="checkbox" name="faits" value="Immobilisation prolongée"> Immobilisation prolongée</label></div>
- <button class="btn" id="btnAnalyze">🧠 Lancer l'analyse complète</button>
+ <button class="btn" id="btnAnalyze">🧠 Lancer l&#39;analyse complète</button>
  <div class="card" id="aiStatusCard" style="display:none;margin-top:12px"><span class="spin"></span> <span id="aiStatus" class="sub">Initialisation…</span></div>
 </section>
 
@@ -171,8 +176,8 @@ footer{color:var(--mut);font-size:11px;text-align:center;padding:16px;line-heigh
 <section class="screen" id="s-history"><div class="card"><h3>🕘 Historique des analyses</h3><div id="histList"></div></div></section>
 
 <section class="screen" id="s-access">
- <div class="card"><h3>🔔 Demandes d'accès <span class="badge b-bad" id="pendCount">0</span></h3><div id="reqList"></div></div>
- <div class="card"><h3>🎫 Codes d'accès</h3><div id="codeList"></div></div>
+ <div class="card"><h3>🔔 Demandes d&#39;accès <span class="badge b-bad" id="pendCount">0</span></h3><div id="reqList"></div></div>
+ <div class="card"><h3>🎫 Codes d&#39;accès</h3><div id="codeList"></div></div>
  <div class="card"><h3>👥 Utilisateurs</h3><div id="userList"></div></div>
 </section>
 
@@ -195,7 +200,7 @@ footer{color:var(--mut);font-size:11px;text-align:center;padding:16px;line-heigh
 
 <section class="screen" id="s-about">
  <div class="card"><h3>ℹ️ À propos</h3>
- <p class="sub">AutoLitige Expert v2.1 — aide à l'analyse des litiges automobiles. Conclusions <b>informatives</b>, ne remplaçant ni un expert agréé ni un avocat. Fonctionne en 4G/5G/Wi-Fi et hors ligne.</p></div>
+ <p class="sub">AutoLitige Expert v2.2 — aide à l&#39;analyse des litiges automobiles. Conclusions <b>informatives</b>, ne remplaçant ni un expert agréé ni un avocat. Fonctionne en 4G/5G/Wi‑Fi et hors ligne.</p></div>
  <div class="card src"><h3>🌐 Vérification des rappels (officiel)</h3>
   <div class="kv"><span>NHTSA (par VIN)</span><a href="https://www.nhtsa.gov/recalls" target="_blank" rel="noopener">nhtsa.gov/recalls</a></div>
   <div class="kv"><span>Rappel Conso</span><a href="https://rappels-produits.gouv.fr" target="_blank" rel="noopener">rappels-produits.gouv.fr</a></div>
@@ -208,11 +213,28 @@ footer{color:var(--mut);font-size:11px;text-align:center;padding:16px;line-heigh
 <nav id="nav"></nav>
 <div id="modalBack"></div><div id="toasts"></div>
 <input type="file" id="fileImport" hidden accept="application/json,.json">
+<noscript><div style="padding:20px;color:#f87171">JavaScript est désactivé : l&#39;application ne peut pas fonctionner.</div></noscript>
 
 <script>
 'use strict';
-const LOGO_SVG="<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='#2563eb'/><stop offset='1' stop-color='#7c3aed'/></linearGradient></defs><rect width='512' height='512' rx='112' fill='url(#g)'/><path d='M96 300c0-10 6-18 16-20l40-8 34-62c8-14 22-22 38-22h84c16 0 30 8 38 22l34 62 40 8c10 2 16 10 16 20v52c0 8-6 14-14 14h-20c-8 0-14-6-14-14v-10H166v10c0 8-6 14-14 14h-20c-8 0-14-6-14-14z' fill='#fff' opacity='.95'/><circle cx='196' cy='316' r='26' fill='#0b1220'/><circle cx='316' cy='316' r='26' fill='#0b1220'/><rect x='150' y='366' width='212' height='24' rx='12' fill='#fff' opacity='.85'/></svg>";
-const IC={bell:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>',
+/* ============ OUTILS ============ */
+function $(s){return document.querySelector(s)}
+function $$(s){return Array.prototype.slice.call(document.querySelectorAll(s))}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+function uid(){try{return crypto.randomUUID()}catch(e){return Date.now()+'-'+Math.random().toString(36).slice(2)}}
+function iso(){return new Date().toISOString()}
+function v(id){var el=$('#'+id);return el?(el.value||'').trim():''}
+function norm(s){return String(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')}
+function toast(m,t){var d=document.createElement('div');d.className='toast '+(t||'info');d.textContent=m;$('#toasts').appendChild(d);setTimeout(function(){d.remove()},4200)}
+function modal(h){$('#modalBack').innerHTML='<div class="modal">'+h+'</div>';$('#modalBack').style.display='flex'}
+function closeModal(){$('#modalBack').style.display='none';$('#modalBack').innerHTML=''}
+function dl(name,content,type){var b=(content instanceof Blob)?content:new Blob([content],{type:type||'text/plain'});var a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(a.href)},8000)}
+function notify(t,b){try{if('Notification' in window&&Notification.permission==='granted'){new Notification(t,{body:b})}}catch(e){}}
+function showErr(m){var el=$('#errBanner');el.style.display='block';el.textContent='⚠ '+m}
+window.onerror=function(msg,src,line){showErr('ERREUR JS : '+msg+' (ligne '+line+') — faites une capture et envoyez-la.');return false};
+var ADMIN_KEY=atob('S2V2aW44MzYwMA==');
+var LOGO_SVG="<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='#2563eb'/><stop offset='1' stop-color='#7c3aed'/></linearGradient></defs><rect width='512' height='512' rx='112' fill='url(#g)'/><path d='M96 300c0-10 6-18 16-20l40-8 34-62c8-14 22-22 38-22h84c16 0 30 8 38 22l34 62 40 8c10 2 16 10 16 20v52c0 8-6 14-14 14h-20c-8 0-14-6-14-14v-10H166v10c0 8-6 14-14 14h-20c-8 0-14-6-14-14z' fill='#fff' opacity='.95'/><circle cx='196' cy='316' r='26' fill='#0b1220'/><circle cx='316' cy='316' r='26' fill='#0b1220'/><rect x='150' y='366' width='212' height='24' rx='12' fill='#fff' opacity='.85'/></svg>";
+var IC={bell:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>',
 lock:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>',
 car:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 11l1.5-4.5A2 2 0 0 1 8.4 5h7.2a2 2 0 0 1 1.9 1.5L19 11M3 16v-3a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v3"/><circle cx="7.5" cy="16.5" r="1.6"/><circle cx="16.5" cy="16.5" r="1.6"/></svg>',
 book:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>',
@@ -226,21 +248,8 @@ warn:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2
 recall:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12a9 9 0 1 1-2.6-6.3"/><polyline points="21 3 21 9 15 9"/></svg>',
 brain:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2a4 4 0 0 0-4 4 4 4 0 0 0-2 7 4 4 0 0 0 3 6h6a4 4 0 0 0 3-6 4 4 0 0 0-2-7 4 4 0 0 0-4-4z"/><path d="M12 2v20"/></svg>',
 save:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/></svg>'};
-const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
-const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const uid=()=>(crypto.randomUUID?crypto.randomUUID():Date.now()+'-'+Math.random().toString(36).slice(2));
-const iso=()=>new Date().toISOString();
-const v=id=>($('#'+id)?($('#'+id).value||'').trim():'');
-const norm=s=>String(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
-function toast(m,t){const d=document.createElement('div');d.className='toast '+(t||'info');d.textContent=m;$('#toasts').appendChild(d);setTimeout(function(){d.remove()},4200)}
-function modal(h){$('#modalBack').innerHTML='<div class="modal">'+h+'</div>';$('#modalBack').style.display='flex'}
-function closeModal(){$('#modalBack').style.display='none';$('#modalBack').innerHTML=''}
-$('#modalBack').addEventListener('click',function(e){if(e.target.id==='modalBack')closeModal()});
-function dl(name,content,type){const b=content instanceof Blob?content:new Blob([content],{type:type||'text/plain'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(a.href)},8000)}
-function notify(t,b){try{if('Notification'in window&&Notification.permission==='granted')new Notification(t,{body:b})}catch(e){}}
-const ADMIN_KEY=atob('S2V2aW44MzYwMA==');
-/* ===== DEFAUTS CONNUS ===== */
-const ISS={
+/* ============ DEFAUTS CONNUS ============ */
+var ISS={
 h5f:{t:'Chaîne de distribution & consommation d\u2019huile — moteur H5F (1.2 TCe 115-130)',s:3,d:'Défaut majeur reconnu : allongement de chaîne et surconsommation d\u2019huile (segmentation) sur moteurs 2012-2016. Concerne Renault, Dacia, Nissan (1.2 DIG-T).',sg:['Claquement/cliquetis à froid','Codes P0016, P0008, P0300','Baisse du niveau d\u2019huile, fumée bleue'],cs:['Casse moteur fréquente hors garantie','Immobilisation longue'],fx:'Contrôle immédiat ; chaîne + tendeur renforcé ; demande de prise en charge constructeur (âge/km/historique).'},
 h4bt:{t:'0.9 TCe (H4Bt) — turbo/ralenti',s:1,d:'Ralenti irrégulier, sifflement de wastegate, consommation d\u2019huile modérée ; globalement fiable.',sg:['Ralenti irrégulier','Sifflement turbo'],cs:['Aucune conséquence grave'],fx:'Mises à jour logicielles, contrôle suralimentation.'},
 h4jt:{t:'1.4 TCe (H4Jt) — allumage/turbo',s:2,d:'Bobines, capteur PMH et wastegate : pannes récurrentes mais réparables.',sg:['Ratés, voyant moteur','Codes P0300-P0304'],cs:['Mode dégradé, usure catalyseur'],fx:'Bobines + bougies, contrôle pression turbo.'},
@@ -310,9 +319,9 @@ lineartronic:{t:'CVT Lineartronic',s:2,d:'Chaîne et solénoïdes : vidange rég
 tesla-mcu:{t:'Écran MCU1 — mémoire eMMC',s:2,d:'Défaillance eMMC (Model S/X 2012-2018) : écran figé/noir ; campagne Tesla.',sg:['Écran noir, lenteur'],cs:['Perte fonctions'],fx:'Campagne Tesla, upgrade.'},
 tesla-susp:{t:'Model S/X — bras de suspension',s:1,d:'Bras de suspension avant (campagnes), corrosion.',sg:['Bruit train avant'],cs:['Sécurité'],fx:'Vérification VIN.'},
 tesla-caliper:{t:'Model 3/Y — étriers arrière',s:1,d:'Étrier arrière pouvant se gripper (hiver) : campagne.',sg:['Frein qui chauffe'],cs:['Usure disques'],fx:'Campagne réseau.'}};
-const FIAB={1:'Très fragile',2:'Fragile',3:'Correcte',4:'Fiable',5:'Très fiable'};
-/* ===== RAPPELS ===== */
-const REC={
+var FIAB={1:'Très fragile',2:'Fragile',3:'Correcte',4:'Fiable',5:'Très fiable'};
+/* ============ RAPPELS ============ */
+var REC={
 'r-h5f':{n:'Chaîne 1.2 TCe (H5F) — Renault/Dacia/Nissan',u:0,y:'2012-2018',t:'Prise en charge partielle selon âge/km/historique ; vérification VIN en concession.'},
 'r-k9k':{n:'Pompe Delphi 1.5 dCi (K9K)',u:0,y:'2003-2010',t:'Limaille détruisant le circuit d\u2019injection ; prises en charge ponctuelles selon dossier.'},
 'r-puretech':{n:'Courroie 1.2 PureTech (EB2) — Stellantis',u:1,y:'2014-2022',t:'Campagnes contrôle/remplacement courroie + crépine ; extension 10 ans/175 000 km. RISQUE CASSE MOTEUR.'},
@@ -334,10 +343,10 @@ const REC={
 'r-tesla-mcu':{n:'Écran MCU1 — Tesla',u:0,y:'2012-2018',t:'Campagne Tesla : remplacement eMMC / upgrade.'},
 'r-takata':{n:'Airbags Takata (multi-marques)',u:1,y:'2013-',t:'Rappels massifs : RISQUE MORTEL. Honda, Toyota, Nissan, BMW, Ford, Mazda, Subaru, Mitsubishi, Jeep, Chrysler, Tesla… VIN prioritaire.'},
 'r-takata-c3':{n:'Takata Citroën C3/DS3 — STOP DRIVE',u:1,y:'2024-',t:'Ne pas conduire tant que l\u2019airbag n\u2019est pas remplacé (C3 2009-2019, DS3).'}};
-const TAKATA_BRANDS=['Honda','Toyota','Nissan','BMW','Ford','Mazda','Subaru','Mitsubishi','Jeep','Chrysler','Tesla','Citroën','DS'];
-/* ===== BASE MARQUE>MODELE>MOTORISATION ===== */
+var TAKATA_BRANDS=['Honda','Toyota','Nissan','BMW','Ford','Mazda','Subaru','Mitsubishi','Jeep','Chrysler','Tesla','Citroën','DS'];
+/* ============ BASE MARQUE>MODELE>MOTORISATION ============ */
 function E(n,f,b,i,r){return{n:n,f:f,b:b,i:i||[],r:r||[]}}
-const KB={
+var KB={
 'Renault':{
  e:{sce65:E('1.0 SCe 65/75 (B4D)','Essence',4),tce100:E('1.0 TCe 90/100 (H4Dt)','Essence turbo',4),tce90:E('0.9 TCe 90 (H4Bt)','Essence turbo',3,['h4bt']),d4f:E('1.2 16V 65/75 (D4F)','Essence',4),k4j:E('1.4 16V 75/98 (K4J)','Essence',4),k4m:E('1.6 16V 100/110 (K4M)','Essence',3,['k4m']),f4r:E('2.0 16V 135/170 (F4R)','Essence',4),h5f:E('1.2 TCe 115/120/125/130 (H5F)','Essence turbo',1,['h5f'],['r-h5f']),h4jt:E('1.4 TCe 130 (H4Jt)','Essence turbo',3,['h4jt']),h5ht:E('1.3 TCe 115/140/160 (H5Ht)','Essence turbo',4),k9k:E('1.5 dCi 65/70/85/90/110 (K9K)','Diesel',2,['k9k'],['r-k9k']),r9m:E('1.6 dCi 130/160 (R9M)','Diesel',3,['r9m']),f9q:E('1.9 dCi 100/120/130 (F9Q)','Diesel',2,['f9q']),m9r:E('2.0 dCi 130/150/175/200 (M9R)','Diesel',3,['m9r']),g9t:E('2.2 dCi 115/140/150 (G9T)','Diesel',1,['g9t']),edc:E('Boîte auto EDC (DC4)','Transmission',2,['edc'])},
  m:{'Twingo 2':['d4f','k4j'],'Twingo 3':['sce65','tce100','tce90'],'Clio 3':['d4f','k4j','k4m','f4r','k9k','f9q'],'Clio 4':['d4f','tce90','h5f','k9k'],'Clio 5':['sce65','tce100','h5ht','k9k'],'Captur 1':['tce90','h5f','k9k'],'Captur 2':['tce100','h5ht','k9k'],'Mégane 2':['k4j','k4m','f4r','k9k','f9q'],'Mégane 3':['k4m','f4r','h4jt','h5f','k9k','r9m','m9r'],'Mégane 4':['h5f','h5ht','k9k','r9m'],'Scénic 2':['k4m','f4r','k9k','f9q','m9r'],'Scénic 3':['k4m','h4jt','h5f','k9k','r9m','m9r'],'Scénic 4':['h5f','h5ht','k9k','r9m'],'Kangoo 2':['k4m','h5f','k9k'],'Kadjar':['h5f','h5ht','k9k','r9m'],'Koleos':['m9r'],'Laguna 2':['k4m','f4r','f9q','g9t','m9r'],'Laguna 3':['f4r','h4jt','k9k','m9r'],'Talisman':['h5ht','k9k','r9m'],'Espace 5':['h5ht','r9m']}},
@@ -402,7 +411,7 @@ const KB={
  e:{etorq:E('1.6 E-Torq 110','Essence',3),firefly:E('1.3 FireFly 120/150','Essence turbo',4),mair:E('1.4 MultiAir 140/170','Essence',2,['multiair']),mjt16:E('1.6 MultiJet 120','Diesel',3,['mjt16']),mjt20:E('2.0 MultiJet 140/170','Diesel',3),zf9:E('Boîte auto ZF 9HP','Transmission',2,['zf9'])},
  m:{'Renegade':['etorq','firefly','mair','mjt16','mjt20','zf9'],'Compass':['firefly','mjt16','mjt20','zf9'],'Cherokee':['mjt20','zf9'],'Wrangler':['mjt20']}},
 'Lancia':{
- e:{fire:E('1.2/1.4 69/77/95','Essence',4),mjt13:E('1.3 MultiJet 95','Diesel',3,['mjt13']),mjt16:E('1.6 MultiJet 120','Diesel',3,['mjt16'])},
+ e:{fire:E('1.2/1.4 69/77/95','Essence',4),mair:E('1.4 MultiAir 120','Essence',2,['multiair']),mjt13:E('1.3 MultiJet 95','Diesel',3,['mjt13']),mjt16:E('1.6 MultiJet 120','Diesel',3,['mjt16'])},
  m:{'Ypsilon':['fire','mjt13'],'Delta':['mair','mjt16']}},
 'Honda':{
  e:{ivtec:E('1.2/1.4/1.8 i-VTEC 90/100/140/142','Essence',4),vtecT:E('1.0 VTEC Turbo 129 / 1.5 VTEC Turbo 182','Essence turbo',3),n16:E('1.6 i-DTEC 120','Diesel',3,['honda-n16']),ictdi:E('2.2 i-CTDi 140','Diesel',2,['honda-ictdi']),n22:E('2.2 i-DTEC 150','Diesel',3,['honda-n22']),ima:E('Hybride IMA 1.3/1.5','Hybride',4)},
@@ -428,8 +437,8 @@ const KB={
 'Smart':{
  e:{m132:E('1.0 71 (M132)','Essence',3),m281:E('0.9 Turbo 90 (M281)','Essence turbo',3)},
  m:{'ForTwo 453':['m132','m281'],'ForFour 453':['m132','m281']}}};
-/* ===== DTC & SYMPTOMES ===== */
-const DTC_DB={
+/* ============ DTC & SYMPTOMES ============ */
+var DTC_DB={
 P0008:{d:'Performance du calage de distribution (banc 1)',c:['Chaîne détendue','Tendeur HS'],k:['Risque casse moteur'],s:3},
 P0016:{d:'Corrélation vilebrequin/arbre à cames',c:['Chaîne décalée ou détendue','Déphaseur VVT/VANOS HS'],k:['Casse moteur par contact soupapes/pistons'],s:3},
 P0017:{d:'Corrélation AAC (échappement)',c:['Chaîne usée','Solénoïde grippé'],k:['Fonctionnement dégradé'],s:3},
@@ -469,9 +478,9 @@ P2463:{d:'FAP : suie au-dessus du seuil',c:['Défaut régénération','EGR'],k:[
 U0100:{d:'Perte communication calculateur moteur',c:['Faisceau CAN','Calculateur','BSI/UCH'],k:['Non-démarrage, panne totale électronique'],s:3},
 U0121:{d:'Perte communication ABS/ESP',c:['Calculateur ABS','CAN'],k:['Aides à la conduite HS'],s:2},
 B1000:{d:'Défaut airbag/prétensionneur',c:['Module airbag','Nappe volant','RAPPEL TAKATA à vérifier'],k:['SÉCURITÉ : non-déploiement possible'],s:3}};
-function dtcGeneric(c){var fam={P:'motopropulseur',B:'carrosserie (airbags…)',C:'châssis (ABS…)',U:'réseau multiplexé'}[c[0]]||'?';
+function dtcGeneric(c){var fam={P:'motopropulseur',B:'carrosserie (airbags…)',C:'châssis (ABS…)',U:'réseau multiplexé'}[c.charAt(0)]||'?';
 return{d:'Code '+c+' — système '+fam+' (définition constructeur à confirmer)',c:['Documentation constructeur / valise d\u2019atelier'],k:['À confirmer'],s:1}}
-const SYMPTOMS=[
+var SYMPTOMS=[
 {t:'Fumée blanche épaisse / odeur LDR',m:['fumée blanche','fumee blanche','liquide de refroidissement','mayonnaise'],o:['Joint de culasse / culasse fissurée','Refroidisseur EGR percé (diesel)'],k:['Surchauffe, casse moteur à terme'],s:3},
 {t:'Fumée noire',m:['fumée noire','fumee noire'],o:['Mélange riche : injecteurs, EGR bloquée, FAP'],k:['Encrassement, contre-visite CT'],s:2},
 {t:'Fumée bleue / consommation d\u2019huile',m:['fumée bleue','consommation d huile','niveau d huile','baisse d huile'],o:['Segmentation / queues de soupapes','Turbo (jeu d\u2019axe)','Défaut connu du moteur (voir cas connus)'],k:['Consommation d\u2019huile anormale, casse possible'],s:3},
@@ -488,8 +497,8 @@ const SYMPTOMS=[
 {t:'Problème FAP / régénération',m:['fap','dpf','filtre à particules','régénération','regeneration'],o:['FAP saturé (usage urbain)'],k:['Mode dégradé, remplacement coûteux'],s:2},
 {t:'Volant moteur / embrayage',m:['volant moteur','embrayage','point de patinage'],o:['Volant moteur bi-masse, disque usé'],k:['Immobilisation à terme'],s:2},
 {t:'Direction bruyante',m:['clac direction','bruit direction','claquement direction'],o:['Accouplement de colonne (MDPS), crémaillère'],k:['Confort/sécurité'],s:1}];
-/* ===== LEGAL ===== */
-const LEGAL_DB=[
+/* ============ LEGAL ============ */
+var LEGAL_DB=[
 {r:'Art. 1641 C. civ.',t:'Garantie des défauts cachés rendant la chose impropre à son usage ou en diminuant l\u2019usage.'},
 {r:'Art. 1644 C. civ.',t:'Action rédhibitoire (restitution) ou estimatoire (réduction de prix).'},
 {r:'Art. 1645 C. civ.',t:'Le vendeur qui connaissait le vice doit des dommages et intérêts — le vendeur professionnel est présumé connaître les vices (jurisprudence constante).'},
@@ -509,30 +518,41 @@ const LEGAL_DB=[
 {r:'Art. 750-1 C. pr. civ.',t:'Tentative amiable obligatoire ≤ 5 000 €.'},
 {r:'Art. L.611-1 et s. C. conso',t:'Médiateur de la consommation.'},
 {r:'Règlement (UE) 2023/988 & Rappel Conso',t:'Obligation de rappel des produits dangereux, portail rappels-produits.gouv.fr.'}];
-/* ===== PERSISTANCE ===== */
-const LS_KEY='autolitige_db_v2',SESS_KEY='autolitige_session';
+/* ============ PERSISTANCE ============ */
+var LS_KEY='autolitige_db_v2',SESS_KEY='autolitige_session';
 function seed(){return{v:2,requests:[],codes:[],users:[],analyses:[],settings:{aiOnline:true,useGemini:false,geminiKey:''},savedAt:iso()}}
 var DB;try{DB=JSON.parse(localStorage.getItem(LS_KEY))||seed()}catch(e){DB=seed()}
 function save(){DB.savedAt=iso();try{localStorage.setItem(LS_KEY,JSON.stringify(DB))}catch(e){toast('Stockage saturé : exportez une sauvegarde','warn')}}
 function getSession(){try{return JSON.parse(localStorage.getItem(SESS_KEY))}catch(e){return null}}
 function setSession(s){if(s){localStorage.setItem(SESS_KEY,JSON.stringify(s))}else{localStorage.removeItem(SESS_KEY)}}
 function sessionValid(){var s=getSession();if(!s)return null;if(s.role==='admin')return s;if(s.role==='user'){var c=DB.codes.find(function(x){return x.code===s.code&&x.status==='active'});if(c)return s;setSession(null)}return null}
-/* ===== NAV ===== */
-const NAV_ITEMS=[{id:'s-new',l:'Analyse',ic:'car',r:'all'},{id:'s-lib',l:'Cas connus',ic:'book',r:'all'},{id:'s-history',l:'Historique',ic:'hist',r:'all'},{id:'s-access',l:'Accès',ic:'shield',r:'admin'},{id:'s-settings',l:'Réglages',ic:'gear',r:'admin'},{id:'s-about',l:'Infos',ic:'info',r:'all'}];
+/* ============ AUTOCONTROLE ============ */
+function selfTest(){var problems=[];var engines=0;var brands=0;
+for(var b in KB){brands++;var B=KB[b];
+ for(var ek in B.e){engines++;var e=B.e[ek];
+  (e.i||[]).forEach(function(i){if(!ISS[i])problems.push('Défaut inconnu : '+i+' ('+b+')')});
+  (e.r||[]).forEach(function(r){if(!REC[r])problems.push('Rappel inconnu : '+r+' ('+b+')')})}
+ for(var m in B.m){(B.m[m]||[]).forEach(function(k){if(!B.e[k])problems.push('Moteur manquant : '+b+' / '+m+' / '+k)})}}
+var nIss=0,i2;for(i2 in ISS)nIss++;var nRec=0,r2;for(r2 in REC)nRec++;
+return{problems:problems,engines:engines,brands:brands,iss:nIss,rec:nRec}}
+/* ============ NAV ============ */
+var NAV_ITEMS=[{id:'s-new',l:'Analyse',ic:'car',r:'all'},{id:'s-lib',l:'Cas connus',ic:'book',r:'all'},{id:'s-history',l:'Historique',ic:'hist',r:'all'},{id:'s-access',l:'Accès',ic:'shield',r:'admin'},{id:'s-settings',l:'Réglages',ic:'gear',r:'admin'},{id:'s-about',l:'Infos',ic:'info',r:'all'}];
 function renderNav(){var s=sessionValid();$('#nav').innerHTML=NAV_ITEMS.filter(function(n){return n.r==='all'||(s&&s.role==='admin')}).map(function(n){return '<button data-goto="'+n.id+'">'+IC[n.ic]+'<span>'+n.l+'</span></button>'}).join('');$$('#nav button').forEach(function(b){b.onclick=function(){show(b.getAttribute('data-goto'))}})}
 function show(id){document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('on')});var el=$('#'+id);if(el)el.classList.add('on');$$('#nav button').forEach(function(b){b.classList.toggle('on',b.getAttribute('data-goto')===id)});window.scrollTo(0,0);
 if(id==='s-access')renderAccess();if(id==='s-settings')renderSettings();if(id==='s-history')renderHistory()}
 function updateConn(){var c=navigator.connection;var chip=$('#connChip');if(navigator.onLine){chip.className='ok';chip.textContent='En ligne'+((c&&c.effectiveType)?' · '+c.effectiveType.toUpperCase():'')}else{chip.className='warn';chip.textContent='Hors ligne · base locale'}}
 addEventListener('online',updateConn);addEventListener('offline',updateConn);
-/* ===== AUTH ===== */
-$('#logoIco').innerHTML=LOGO_SVG;$('#logoBig').innerHTML='<div class="logo-big">'+LOGO_SVG+'</div>';$('#btnNotif').innerHTML=IC.bell;$('#btnLock').innerHTML=IC.lock;
+/* ============ AUTH ============ */
+function bindAuth(){$('#logoIco').innerHTML=LOGO_SVG;$('#logoBig').innerHTML='<div class="logo-big">'+LOGO_SVG+'</div>';$('#btnNotif').innerHTML=IC.bell;$('#btnLock').innerHTML=IC.lock;
 $('#btnLock').onclick=function(){if(sessionValid()){logout()}else{show('s-login')}};
-$('#btnNotif').onclick=function(){if(!('Notification'in window)){toast('Notifications non supportées','warn');return}Notification.requestPermission().then(function(p){toast(p==='granted'?'Notifications activées':'Notifications refusées',p==='granted'?'ok':'bad')})};
+$('#btnNotif').onclick=function(){if(!('Notification' in window)){toast('Notifications non supportées','warn');return}Notification.requestPermission().then(function(p){toast(p==='granted'?'Notifications activées':'Notifications refusées',p==='granted'?'ok':'bad')})};
 $('#btnAdmin').onclick=function(){modal('<h3>🔐 Connexion administrateur</h3><label>Mot de passe</label><input type="password" id="adm-pass"><button class="btn" id="adm-go">Valider</button><button class="btn sec" onclick="closeModal()">Annuler</button>');
-$('#adm-go').onclick=function(){if(v('adm-pass')===ADMIN_KEY){setSession({role:'admin'});closeModal();toast('Bienvenue, administrateur','ok');if('Notification'in window&&Notification.permission==='default')Notification.requestPermission();enterApp()}else{toast('Mot de passe incorrect','bad')}}};
+ $('#adm-go').onclick=function(){if(v('adm-pass')===ADMIN_KEY){setSession({role:'admin'});closeModal();toast('Bienvenue, administrateur','ok');if('Notification' in window&&Notification.permission==='default')Notification.requestPermission();enterApp()}else{toast('Mot de passe incorrect','bad')}}};
 $('#btnReq').onclick=function(){show('s-request')};
 $('#btnCode').onclick=function(){show('s-code')};
 $('#rq-send').onclick=function(){var n=v('rq-name');if(!n){toast('Indiquez votre nom','warn');return}DB.requests.push({id:uid(),name:n,contact:v('rq-contact'),motif:v('rq-motif'),date:iso(),status:'pending'});save();toast('Demande envoyée à l\u2019administrateur','ok');notify('Nouvelle demande d\u2019accès',n);showPending(DB.requests[DB.requests.length-1].id)};
+$('#code-go').onclick=function(){activateCode(v('code-in').toUpperCase(),v('code-name'))};
+$('#modalBack').addEventListener('click',function(e){if(e.target.id==='modalBack')closeModal()})}
 function showPending(id){show('s-pending');if(window._pendTimer)clearInterval(window._pendTimer);
 var draw=function(){var r=DB.requests.find(function(x){return x.id===id});if(!r){show('s-login');return}var h='';
 if(r.status==='pending')h='<div style="font-size:40px">⏳</div><h3>Demande en attente</h3><p class="sub">L\u2019administrateur a été notifié.</p><button class="btn sec" onclick="logout()">Retour</button>';
@@ -540,12 +560,11 @@ else if(r.status==='denied')h='<div style="font-size:40px">⛔</div><h3>Demande 
 else h='<div style="font-size:40px">✅</div><h3>Demande acceptée !</h3><div class="mono">'+r.code+'</div><button class="btn" onclick="activateCode(\''+r.code+'\',\''+esc(r.name).replace(/'/g,'')+'\')">Activer mon accès</button>';
 $('#pend-body').innerHTML=h};draw();
 window._pendTimer=setInterval(function(){var r=DB.requests.find(function(x){return x.id===id});if(r&&r.status!=='pending'){draw();if(r.status==='approved')notify('Accès accepté','Code : '+r.code);clearInterval(window._pendTimer)}},1200)}
-$('#code-go').onclick=function(){activateCode(v('code-in').toUpperCase(),v('code-name'))};
 function activateCode(code,name){var c=DB.codes.find(function(x){return x.code===code});if(!c){toast('Code inconnu','bad');return}if(c.status==='revoked'){toast('Code révoqué','bad');return}
 setSession({role:'user',code:code,name:name||c.name});if(!DB.users.find(function(u){return u.code===code}))DB.users.push({id:uid(),code:code,name:name||c.name,date:iso(),status:'active'});save();toast('Accès activé ✔','ok');enterApp()}
 function logout(){setSession(null);if(window._pendTimer)clearInterval(window._pendTimer);renderNav();show('s-login')}
 function enterApp(){renderNav();show('s-new')}
-/* ===== ACCES ADMIN ===== */
+/* ============ ACCES ADMIN ============ */
 function rnd4(){return Math.random().toString(36).slice(2,6).toUpperCase()}
 function renderAccess(){$('#pendCount').textContent=DB.requests.filter(function(r){return r.status==='pending'}).length;
 $('#reqList').innerHTML=DB.requests.length?DB.requests.slice().reverse().map(function(r){var st=r.status==='pending'?'<span class="badge b-warn">En attente</span>':r.status==='approved'?'<span class="badge b-ok">Acceptée</span>':'<span class="badge b-bad">Refusée</span>';
@@ -561,69 +580,69 @@ function revokeCode(code){var c=DB.codes.find(function(x){return x.code===code})
 function restoreCode(code){var c=DB.codes.find(function(x){return x.code===code});if(c)c.status='active';var u=DB.users.find(function(x){return x.code===code});if(u)u.status='active';save();renderAccess()}
 function blockUser(id){var u=DB.users.find(function(x){return x.id===id});if(u)u.status='blocked';var c=DB.codes.find(function(x){return x.code===u.code});if(c)c.status='revoked';save();renderAccess()}
 function unblockUser(id){var u=DB.users.find(function(x){return x.id===id});if(u)u.status='active';var c=DB.codes.find(function(x){return x.code===u.code});if(c)c.status='active';save();renderAccess()}
-/* ===== SELECTS EN CASCADE (CORRIGES) ===== */
+/* ============ SELECTS EN CASCADE ============ */
 function fillBrands(sel,withFree){sel.innerHTML='<option value="">— Choisir la marque —</option>'+Object.keys(KB).sort().map(function(b){return '<option>'+b+'</option>'}).join('')+(withFree?'<option value="__autre">Autre (saisie libre)</option>':'')}
 function fillModels(b,sel,withFree){var B=KB[b];sel.disabled=!B;
 sel.innerHTML='<option value="">— Choisir le modèle —</option>'+(B?Object.keys(B.m).sort().map(function(m){return '<option>'+m+'</option>'}).join(''):'')+(withFree?'<option value="__autre">Autre (saisie libre)</option>':'')}
 function fillEngines(b,m,sel,withFree){var list=(KB[b]&&KB[b].m[m])||[];sel.disabled=!list.length;
 sel.innerHTML='<option value="">— Motorisation / puissance —</option>'+list.filter(function(k){return KB[b]&&KB[b].e[k]}).map(function(k){var e=KB[b].e[k];return '<option value="'+k+'">'+esc(e.n)+' — '+e.f+' · fiabilité '+FIAB[e.b]+'</option>'}).join('')+(withFree?'<option value="__autre">Autre motorisation (saisie libre)</option>':'')}
-/* Bibliothèque */
-$('#lib-q').addEventListener('input',function(){var q=norm(v('lib-q'));var out=$('#lib-search-res');if(q.length<2){out.innerHTML='';return}
-var res=[];for(var b in KB){var B=KB[b];for(var m in B.m){B.m[m].forEach(function(k){var e=B.e[k];if(!e)return;var hay=norm(b+' '+m+' '+e.n);if(hay.indexOf(q)>=0)res.push({b:b,m:m,k:k})})}}
+/* ============ BIBLIOTHEQUE ============ */
+function bindLib(){$('#lib-q').addEventListener('input',function(){var q=norm(v('lib-q'));var out=$('#lib-search-res');if(q.length<2){out.innerHTML='';return}
+var res=[];for(var b in KB){var B=KB[b];for(var m in B.m){(B.m[m]||[]).forEach(function(k){var e=B.e[k];if(!e)return;if(norm(b+' '+m+' '+e.n).indexOf(q)>=0)res.push({b:b,m:m,k:k})})}}
 out.innerHTML=res.length?'<div class="card"><h3>Résultats ('+res.length+')</h3>'+res.slice(0,30).map(function(r){return '<div class="hist-item" onclick="libSelect(\''+r.b.replace(/'/g,"\\'")+'\',\''+r.m.replace(/'/g,"\\'")+'\',\''+r.k+'\')"><div><b>'+esc(r.b)+' '+esc(r.m)+'</b><br><span class="sub">'+esc(KB[r.b].e[r.k].n)+' — '+KB[r.b].e[r.k].f+'</span></div><span class="badge b-info">Voir</span></div>'}).join('')+'</div>':'<div class="card"><p class="sub">Aucun résultat pour cette recherche.</p></div>'});
-window.libSelect=function(b,m,k){$('#lib-b').value=b;fillModels(b,$('#lib-m'));$('#lib-m').value=m;fillEngines(b,m,$('#lib-e'));$('#lib-e').value=k;libShow(b,m,k);$('#lib-search-res').innerHTML='';$('#lib-q').value=''};
-$('#lib-b').onchange=function(){var b=$('#lib-b').value;fillModels(b,$('#lib-m'));$('#lib-e').disabled=true;$('#lib-e').innerHTML='<option value="">— Motorisation —</option>';$('#lib-out').innerHTML=b?takataBanner(b):''};
-$('#lib-m').onchange=function(){var b=$('#lib-b').value,m=$('#lib-m').value;fillEngines(b,m,$('#lib-e'));$('#lib-out').innerHTML=''};
-$('#lib-e').onchange=function(){var b=$('#lib-b').value,m=$('#lib-m').value,k=$('#lib-e').value;if(k)libShow(b,m,k)};
-function takataBanner(b){if(TAKATA_BRANDS.some(function(x){return norm(x)===norm(b)})){var c3=(norm(b)==='citroën'||norm(b)==='ds');
-return '<div class="banner red">🚨 <b>Marque concernée par les rappels airbags Takata</b> — vérification VIN prioritaire.'+(c3?'<br>⛔ Citroën C3 / DS3 : alerte « stop drive » en vigueur.':'')+'</div>'}return ''}
+$('#lib-b').onchange=function(){var b=$('#lib-b').value;fillModels(b,$('#lib-m'),false);$('#lib-e').disabled=true;$('#lib-e').innerHTML='<option value="">— Motorisation —</option>';$('#lib-out').innerHTML=b?takataBanner(b):''};
+$('#lib-m').onchange=function(){var b=$('#lib-b').value,m=$('#lib-m').value;fillEngines(b,m,$('#lib-e'),false);$('#lib-out').innerHTML=''};
+$('#lib-e').onchange=function(){var b=$('#lib-b').value,m=$('#lib-m').value,k=$('#lib-e').value;if(k)libShow(b,m,k)}}
+window.libSelect=function(b,m,k){$('#lib-b').value=b;fillModels(b,$('#lib-m'),false);$('#lib-m').value=m;fillEngines(b,m,$('#lib-e'),false);$('#lib-e').value=k;libShow(b,m,k);$('#lib-search-res').innerHTML='';$('#lib-q').value=''};
+function takataBanner(b){var found=TAKATA_BRANDS.some(function(x){return norm(x)===norm(b)});if(!found)return '';var c3=(norm(b)==='citroën'||norm(b)==='ds');
+return '<div class="banner red">🚨 <b>Marque concernée par les rappels airbags Takata</b> — vérification VIN prioritaire.'+(c3?'<br>⛔ Citroën C3 / DS3 : alerte « stop drive » en vigueur.':'')+'</div>'}
 function issueHtml(id){var i=ISS[id];if(!i)return '';return '<div class="issue'+(i.s===3?'':' lv'+i.s)+'"><div class="head"><b>'+esc(i.t)+'</b><span class="badge '+(i.s===3?'b-bad':i.s===2?'b-warn':'b-info')+'">'+(i.s===3?'CRITIQUE':i.s===2?'IMPORTANT':'MINEUR')+'</span></div><div class="sub">'+esc(i.d)+'</div>'+(i.sg?'<ul><li><b style="color:var(--tx)">Signes :</b> '+i.sg.map(esc).join(' · ')+'</li></ul>':'')+(i.cs?'<ul><li><b style="color:var(--tx)">Conséquences :</b> '+i.cs.map(esc).join(' · ')+'</li></ul>':'')+(i.fx?'<ul><li><b style="color:var(--tx)">Préconisation :</b> '+esc(i.fx)+'</li></ul>':'')+'</div>'}
 function recallHtml(id){var r=REC[id];if(!r)return '';return '<div class="issue" style="border-left-color:'+(r.u?'#ef4444':'#3b82f6')+'"><div class="head"><b>📣 '+esc(r.n)+'</b><span class="badge '+(r.u?'b-bad':'b-info')+'">'+(r.u?'URGENT SÉCURITÉ':'CAMPAGNE')+'</span></div><div class="sub">'+esc(r.t)+' <b style="color:var(--tx)">Période :</b> '+esc(r.y)+'</div></div>'}
-function libShow(b,m,k){var e=KB[b].e[k];if(!e)return;var q=encodeURIComponent((b+' '+m).trim());
+function libShow(b,m,k){var e=KB[b]&&KB[b].e[k];if(!e)return;var q=encodeURIComponent((b+' '+m).trim());
 var h=takataBanner(b);
 h+='<div class="card"><h3>'+esc(b)+' '+esc(m)+' — '+esc(e.n)+'</h3><div class="chips"><span class="chip">⛽ '+e.f+'</span><span class="chip">Fiabilité : <b style="margin-left:4px" class="'+(e.b<=2?'b-bad':e.b===3?'b-info':'b-ok')+'">'+FIAB[e.b]+'</b></span></div>'+(e.i.length?'':'<p class="sub" style="margin-top:8px">✅ Aucun défaut récurrent majeur documenté pour cette motorisation dans la base locale.</p>')+'</div>';
 if(e.i.length)h+='<div class="card"><h3>⚠️ Défauts récurrents documentés</h3>'+e.i.map(issueHtml).join('')+'</div>';
 if(e.r.length)h+='<div class="card"><h3>📣 Campagnes de rappel associées</h3>'+e.r.map(recallHtml).join('')+'</div>';
 h+='<div class="card src"><h3>🔗 Vérifications officielles</h3><div class="chips"><span class="chip"><a href="https://www.nhtsa.gov/recalls" target="_blank" rel="noopener">NHTSA (VIN)</a></span><span class="chip"><a href="https://rappels-produits.gouv.fr/recherche?q='+q+'" target="_blank" rel="noopener">Rappel Conso</a></span><span class="chip"><a href="https://ec.europa.eu/safety-gate" target="_blank" rel="noopener">Safety Gate</a></span></div><p class="sub" style="margin-top:8px">Vérification par VIN gratuite dans le réseau du constructeur.</p></div>';
 $('#lib-out').innerHTML=h}
-/* Analyse : cascades */
-$('#f-b').onchange=function(){var b=$('#f-b').value;$('#fb-x').style.display=b==='__autre'?'block':'none';if(b&&b!=='__autre'){fillModels(b,$('#f-mo'),true)}else{$('#f-mo').disabled=true;$('#f-mo').innerHTML='<option value="">— Modèle —</option>'}$('#f-en').disabled=true;$('#f-en').innerHTML='<option value="">— Motorisation —</option>';kbHint()};
-$('#f-mo').onchange=function(){var b=$('#f-b').value,m=$('#f-mo').value;$('#fm-x').style.display=m==='__autre'?'block':'none';if(b&&b!=='__autre'&&m&&m!=='__autre'){fillEngines(b,m,$('#f-en'),true)}else{$('#f-en').disabled=true;$('#f-en').innerHTML='<option value="">— Motorisation —</option>'}kbHint()};
-$('#f-en').onchange=function(){$('#fe-x').style.display=$('#f-en').value==='__autre'?'block':'none';kbHint()};
+/* ============ ANALYSE : CASCADES ============ */
+function bindForm(){$('#f-b').onchange=function(){var b=$('#f-b').value;$('#fb-x').style.display=(b==='__autre')?'block':'none';if(b&&b!=='__autre'){fillModels(b,$('#f-mo'),true)}else{$('#f-mo').disabled=true;$('#f-mo').innerHTML='<option value="">— Modèle —</option>'}$('#f-en').disabled=true;$('#f-en').innerHTML='<option value="">— Motorisation —</option>';kbHint()};
+$('#f-mo').onchange=function(){var b=$('#f-b').value,m=$('#f-mo').value;$('#fm-x').style.display=(m==='__autre')?'block':'none';if(b&&b!=='__autre'&&m&&m!=='__autre'){fillEngines(b,m,$('#f-en'),true)}else{$('#f-en').disabled=true;$('#f-en').innerHTML='<option value="">— Motorisation —</option>'}kbHint()};
+$('#f-en').onchange=function(){$('#fe-x').style.display=($('#f-en').value==='__autre')?'block':'none';kbHint()}}
 function kbHint(){var b=$('#f-b').value,m=$('#f-mo').value,k=$('#f-en').value;var h=$('#kb-hint');
 if(b&&b!=='__autre'&&m&&m!=='__autre'&&k&&k!=='__autre'&&KB[b]&&KB[b].e[k]){var e=KB[b].e[k];h.innerHTML='<div class="banner blue">✔ Base locale : <b>'+e.i.length+'</b> défaut(s) récurrent(s) et <b>'+e.r.length+'</b> campagne(s) de rappel documentés pour <b>'+esc(e.n)+'</b> — intégrés automatiquement au rapport.</div>'}else{h.innerHTML=''}}
-/* ===== IA ===== */
-const FREE_MODELS=['openai','mistral','deepseek','llama','qwen-coder','gemini'];
+/* ============ IA ============ */
+var FREE_MODELS=['openai','mistral','deepseek','llama','qwen-coder','gemini'];
 function tSignal(ms){try{return AbortSignal.timeout?AbortSignal.timeout(ms):undefined}catch(e){return undefined}}
-function buildPrompt(d,kbTxt){return 'Tu es un expert automobile senior doublé d\u2019un juriste français. Analyse ce litige automobile ; réponds en français, structuré avec des titres ##, sans avertissements superflus.\nVÉHICULE : '+d.marque+' '+d.modele+' '+d.annee+' — moteur '+d.motor+' — '+d.km+' km. Achat : '+d.achat+'.\nSYMPTÔMES : '+(d.symptomes||'non précisés')+'\nCODES DTC : '+(d.dtc||'aucun')+'\nHISTORIQUE : '+(d.historique||'non renseigné')+'\nPARTIES : '+(d.parties.join(', ')||'aucune')+'\nFAITS : '+(d.faits.join(', ')||'aucun')+'\nCAS CONNUS DE LA MOTORISATION (base locale) :\n'+(kbTxt||'non renseignés')+'\nFournis :\n## 1. Origines probables de la panne (hiérarchisées, justification technique)\n## 2. Conséquences techniques et sécuritaires\n## 3. Interprétation des codes DTC et cohérence avec les symptômes\n## 4. Rappels / TSB / défauts connus (NHTSA, Rappel Conso, Safety Gate, constructeur)\n## 5. Analyse juridique et responsabilités (citer : C. civ. 1641, 1644, 1645, 1648, 1604, 1231-1, 1240, 1245 s. ; C. conso L.217-3 s., L.217-7, L.121-2 ; C. pén. 313-1, 223-1 ; CPC 145, 750-1) — niveau de responsabilité par partie\n## 6. Stratégie et recommandations (ordre chronologique)'}
+function buildPrompt(d,kbTxt){return 'Tu es un expert automobile senior doubl\u2019un juriste français. Analyse ce litige automobile ; réponds en français, structuré avec des titres ##, sans avertissements superflus.\nVÉHICULE : '+d.marque+' '+d.modele+' '+d.annee+' — moteur '+d.motor+' — '+d.km+' km. Achat : '+d.achat+'.\nSYMPTÔMES : '+(d.symptomes||'non précisés')+'\nCODES DTC : '+(d.dtc||'aucun')+'\nHISTORIQUE : '+(d.historique||'non renseigné')+'\nPARTIES : '+(d.parties.join(', ')||'aucune')+'\nFAITS : '+(d.faits.join(', ')||'aucun')+'\nCAS CONNUS DE LA MOTORISATION (base locale) :\n'+(kbTxt||'non renseignés')+'\nFournis :\n## 1. Origines probables de la panne (hiérarchisées, justification technique)\n## 2. Conséquences techniques et sécuritaires\n## 3. Interprétation des codes DTC et cohérence avec les symptômes\n## 4. Rappels / TSB / défauts connus (NHTSA, Rappel Conso, Safety Gate, constructeur)\n## 5. Analyse juridique et responsabilités (citer : C. civ. 1641, 1644, 1645, 1648, 1604, 1231-1, 1240, 1245 s. ; C. conso L.217-3 s., L.217-7, L.121-2 ; C. pén. 313-1, 223-1 ; CPC 145, 750-1) — niveau de responsabilité par partie\n## 6. Stratégie et recommandations (ordre chronologique)'}
 function pollinations(prompt,model){return fetch('https://text.pollinations.ai/',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:[{role:'system',content:'Expert automobile et juriste français, réponses structurées.'},{role:'user',content:prompt}],model:model,seed:Math.floor(Math.random()*1e6)}),signal:tSignal(80000)}).then(function(r){if(!r.ok)throw new Error('HTTP '+r.status);return r.text()}).then(function(t){if(t.length<150)throw new Error('court');return t})}
 function runAIChain(d,onp){var p=buildPrompt(d,d._kbTxt);var i=0;
-function next(){if(i>=FREE_MODELS.length)return Promise.resolve(null);var m=FREE_MODELS[i];i++;onp&&onp(i,m,FREE_MODELS.length);
+function next(){if(i>=FREE_MODELS.length)return Promise.resolve(null);var m=FREE_MODELS[i];i++;if(onp)onp(i,m,FREE_MODELS.length);
 return pollinations(p,m).then(function(t){return{model:m,text:t}}).catch(function(){return next()})}
 return next()}
 function callGemini(prompt,key){var models=['gemini-2.5-flash','gemini-2.0-flash','gemini-1.5-flash'];var i=0;
 function next(){if(i>=models.length)return Promise.resolve(null);var m=models[i];i++;
-return fetch('https://generativelanguage.googleapis.com/v1beta/models/'+m+':generateContent?key='+encodeURIComponent(key),{method:'POST',headers:{'Content-Type':'application/json'},signal:tSignal(60000),body:JSON.stringify({contents:[{parts:[{text:prompt}]}],systemInstruction:{parts:[{text:'Expert automobile et juriste français.'}]},generationConfig:{temperature:0.35}})}).then(function(r){if(!r.ok)throw new Error('http');return r.json()}).then(function(j){var t=((j.candidates&&j.candidates[0]&&j.candidates[0].content&&j.candidates[0].content.parts)||[]).map(function(p){return p.text||''}).join('');if(t)return{model:'Gemini ('+m+')',text:t};return next()}).catch(function(){return next()})}
+return fetch('https://generativelanguage.googleapis.com/v1beta/models/'+m+':generateContent?key='+encodeURIComponent(key),{method:'POST',headers:{'Content-Type':'application/json'},signal:tSignal(60000),body:JSON.stringify({contents:[{parts:[{text:prompt}]}],systemInstruction:{parts:[{text:'Expert automobile et juriste français.'}]},generationConfig:{temperature:0.35}})}).then(function(r){if(!r.ok)throw new Error('http');return r.json()}).then(function(j){var parts=(j.candidates&&j.candidates[0]&&j.candidates[0].content&&j.candidates[0].content.parts)||[];var t=parts.map(function(p){return p.text||''}).join('');if(t)return{model:'Gemini ('+m+')',text:t};return next()}).catch(function(){return next()})}
 return next()}
 function nhtsaFetch(d){if(!d.marque||!d.modele||!d.annee||!navigator.onLine)return Promise.resolve(null);
-return fetch('https://api.nhtsa.gov/recalls/recallsByVehicle?make='+encodeURIComponent(d.marque)+'&model='+encodeURIComponent(d.modele)+'&model_year='+encodeURIComponent(d.annee),{signal:tSignal(12000)}).then(function(r){if(!r.ok)return null;return r.json()}).then(function(j){return(j&&j.results||[]).slice(0,6).map(function(x){return{comp:x.Component,summary:(x.Summary||'').slice(0,260)}})}).catch(function(){return null})}
-/* ===== MOTEUR LOCAL ===== */
+return fetch('https://api.nhtsa.gov/recalls/recallsByVehicle?make='+encodeURIComponent(d.marque)+'&model='+encodeURIComponent(d.modele)+'&model_year='+encodeURIComponent(d.annee),{signal:tSignal(12000)}).then(function(r){if(!r.ok)return null;return r.json()}).then(function(j){return((j&&j.results)||[]).slice(0,6).map(function(x){return{comp:x.Component,summary:String(x.Summary||'').slice(0,260)}})}).catch(function(){return null})}
+/* ============ MOTEUR LOCAL ============ */
 function analyzeDTC(input){var out=[];var codes=String(input||'').toUpperCase().match(/[PBCU][0-9]{4}/g)||[];
-codes.forEach(function(c){if(out.find(function(o){return o.code===c}))return;var e=DTC_DB[c]||dtcGeneric(c);e.code=c;e.known=!!DTC_DB[c];out.push(e)});return out}
+codes.forEach(function(c){var dup=out.some(function(o){return o.code===c});if(dup)return;var e=DTC_DB[c]||dtcGeneric(c);e.code=c;e.known=!!DTC_DB[c];out.push(e)});return out}
 function matchSymptoms(t){var n=norm(t);return SYMPTOMS.filter(function(s){return s.m.some(function(k){return n.indexOf(norm(k))>=0})})}
 function scanKB(txt){var t=norm(txt);var out=[];if(!t)return out;
 for(var b in KB){if(t.indexOf(norm(b))<0)continue;var B=KB[b];
-for(var m in B.m){B.m[m].forEach(function(k){var e=B.e[k];if(!e)return;var words=norm(e.n).split(/[\s()\/,]+/).filter(function(w){return w.length>2&&w!=='ch'&&w!=='essence'&&w!=='diesel'&&w!=='turbo'});
+for(var m in B.m){(B.m[m]||[]).forEach(function(k){var e=B.e[k];if(!e)return;var words=norm(e.n).split(/[\s()\/,]+/).filter(function(w){return w.length>2&&w!=='ch'&&w!=='essence'&&w!=='diesel'&&w!=='turbo'});
 if(words.some(function(w){return t.indexOf(w)>=0}))out.push({b:b,m:m,k:k})})}}
 return out.slice(0,6)}
 function legalEngine(d){var p=d.parties,f=d.faits,arts=[],liab=[],notes=[];
 var sale=p.some(function(x){return x.indexOf('Vendeur')>=0});
 if(sale){arts.push('1641','1644','1648')}
 if(p.indexOf('Vendeur professionnel')>=0){arts.push('L217-3','L217-7','L217-8','1645');
-liab.push({who:'Vendeur professionnel',lv:f.indexOf('Défaut non signalé à la vente')>=0?'Élevée':'Modérée',b:['Vices cachés : présomption de connaissance du vice par le professionnel (jurisprudence constante) → dommages et intérêts (art. 1641, 1645 C. civ.)','Garantie légale de conformité : défauts présumés antérieurs sous 24 mois (neuf) / 12 mois (occasion) (L.217-7 C. conso)','Délivrance conforme et devoir d\u2019information (art. 1604, 1104 C. civ.)']})}
-if(p.indexOf('Vendeur particulier')>=0){liab.push({who:'Vendeur particulier',lv:f.indexOf('Défaut non signalé à la vente')>=0?'Modérée':'Faible',b:['Vices cachés applicables (1641 C. civ.) mais sans présomption : preuve du vice, de son antériorité et de la connaissance à la charge de l\u2019acheteur']})}
-if(p.indexOf('Garage / réparateur')>=0){liab.push({who:'Garage / réparateur',lv:f.some(function(x){return x==='Intervention garage récente inefficace'||x==='Panne récurrente déjà réparée'})?'Élevée':'À établir',b:['Obligation de résultat sur la réparation confiée (1231-1 C. civ.)','Devoir de diagnostic et de conseil']})}
-if(p.indexOf('Constructeur / importateur')>=0){liab.push({who:'Constructeur / importateur',lv:f.indexOf('Rappel non réalisé')>=0?'Élevée':'Modérée',b:['Responsabilité du fait des produits défectueux (1245 et s. C. civ.)','Obligation de rappel et mesures correctives gratuites (Règl. UE 2023/988, Rappel Conso)','Défaut de série connu non traité : faute du constructeur et du réseau']})}
+liab.push({who:'Vendeur professionnel',lv:(f.indexOf('Défaut non signalé à la vente')>=0)?'Élevée':'Modérée',b:['Vices cachés : présomption de connaissance du vice par le professionnel (jurisprudence constante) → dommages et intérêts (art. 1641, 1645 C. civ.)','Garantie légale de conformité : défauts présumés antérieurs sous 24 mois (neuf) / 12 mois (occasion) (L.217-7 C. conso)','Délivrance conforme et devoir d\u2019information (art. 1604, 1104 C. civ.)']})}
+if(p.indexOf('Vendeur particulier')>=0){liab.push({who:'Vendeur particulier',lv:(f.indexOf('Défaut non signalé à la vente')>=0)?'Modérée':'Faible',b:['Vices cachés applicables (1641 C. civ.) mais sans présomption : preuve du vice, de son antériorité et de la connaissance à la charge de l\u2019acheteur']})}
+if(p.indexOf('Garage / réparateur')>=0){liab.push({who:'Garage / réparateur',lv:(f.some(function(x){return x==='Intervention garage récente inefficace'||x==='Panne récurrente déjà réparée'}))?'Élevée':'À établir',b:['Obligation de résultat sur la réparation confiée (1231-1 C. civ.)','Devoir de diagnostic et de conseil']})}
+if(p.indexOf('Constructeur / importateur')>=0){liab.push({who:'Constructeur / importateur',lv:(f.indexOf('Rappel non réalisé')>=0)?'Élevée':'Modérée',b:['Responsabilité du fait des produits défectueux (1245 et s. C. civ.)','Obligation de rappel et mesures correctives gratuites (Règl. UE 2023/988, Rappel Conso)','Défaut de série connu non traité : faute du constructeur et du réseau']})}
 if(p.indexOf('Contrôleur technique')>=0){liab.push({who:'Centre de contrôle technique',lv:'À établir',b:['Responsabilité délictuelle (1240 C. civ.) si défaut contrôlable non détecté']})}
 if(f.indexOf('Kilométrage suspect')>=0){arts.push('313-1','L121-2');notes.push('Faux kilométrage : pratique commerciale trompeuse (L.121-2 C. conso) et escroquerie (313-1 C. pén.).')}
 if(f.indexOf('Rappel non réalisé')>=0)notes.push('Rappel connu non exécuté : renforce la responsabilité du constructeur/importateur ; risque de mise en danger (223-1 C. pén.) si défaut sécuritaire.');
@@ -631,8 +650,8 @@ if(f.indexOf('Défaut non signalé à la vente')>=0)notes.push('Dissimulation d\
 if(f.indexOf('Entretien non à jour')>=0)notes.push('Point de vigilance : l\u2019absence d\u2019entretien peut être opposée et conduire à un partage de responsabilité.');
 if(f.indexOf('Panne récurrente déjà réparée')>=0)notes.push('Réparations répétées infructueuses : inexécution du réparateur (1231-1) et résolution possible aux torts du vendeur (L.217-8 s.).');
 if(f.indexOf('Immobilisation prolongée')>=0)notes.push('Immobilisation prolongée : indemnisation du préjudice de jouissance.');
-var get=function(r){return LEGAL_DB.find(function(l){return l.r.indexOf(r)>=0})};
-return{arts:arts.filter(function(a,i2){return arts.indexOf(a)===i2}).map(get).filter(Boolean),liab:liab,notes:notes}}
+var uniqArts=arts.filter(function(a,idx){return arts.indexOf(a)===idx});
+return{arts:uniqArts.map(function(r){return LEGAL_DB.find(function(l){return l.r.indexOf(r)>=0})}).filter(Boolean),liab:liab,notes:notes}}
 function actionsBuilder(d){var a=['Constituer le dossier : facture d\u2019achat, certificat de cession, contrôles techniques, factures d\u2019entretien, impression des codes DTC, photos/vidéos, échanges écrits.'];
 if(d.parties.some(function(x){return x.indexOf('Vendeur')>=0}))a.push('Mise en demeure LRAR au vendeur (vices cachés art. 1641 C. civ. / conformité L.217-3 C. conso) : résolution ou réduction de prix.');
 if(d.parties.indexOf('Garage / réparateur')>=0)a.push('Mise en demeure LRAR du garage : obligation de résultat (1231-1 C. civ.).');
@@ -642,13 +661,13 @@ a.push('Contestation technique : expertise amiable contradictoire, sinon référ
 a.push('Justice : tribunal judiciaire/proximité ; ≤ 5 000 € : tentative amiable préalable obligatoire (750-1 CPC).');
 if(d.faits.indexOf('Kilométrage suspect')>=0)a.push('Dépôt de plainte (313-1 C. pén.) et signalement SignalConso/DGCCRF.');
 a.push('Prévenir votre protection juridique (assurance).');return a}
-/* ===== RAPPORT ===== */
+/* ============ RAPPORT ============ */
 function mdLite(s){var h=esc(s);h=h.replace(/^###?\s?(.*)$/gm,'<h4>$1</h4>').replace(/\*\*(.+?)\*\*/g,'<b>$1</b>');
 h=h.split('\n').map(function(l){return /^\s*[-•]\s+/.test(l)?'<li>'+l.replace(/^\s*[-•]\s+/,'')+'</li>':l}).join('\n');
 h=h.replace(/(?:<li>[\s\S]*?<\/li>\n?)+/g,function(m){return '<ul>'+m+'</ul>'});h=h.replace(/\n{2,}/g,'</p><p>').replace(/\n/g,'<br>');return '<p>'+h+'</p>'}
 function buildReport(d,kbEngines,ai,nhtsa){
 var dtcs=analyzeDTC(d.dtc),symps=matchSymptoms(d.symptomes),legal=legalEngine(d),actions=actionsBuilder(d);
-var html='',txt='RAPPORT D\u2019ANALYSE — AUTOLITIGE EXPERT v2.1\n'+new Date().toLocaleString('fr-FR')+'\n=============================================\n';
+var html='',txt='RAPPORT D\u2019ANALYSE — AUTOLITIGE EXPERT v2.2\n'+new Date().toLocaleString('fr-FR')+'\n=============================================\n';
 function sec(t,icon,h,t2){html+='<div class="sec-title">'+(IC[icon]||'')+' '+t+'</div><div class="card">'+h+'</div>';txt+='\n\n### '+t+'\n'+t2+'\n'}
 sec('Contexte déclaré','car','<div class="kv"><span>Véhicule</span><b>'+esc(d.marque)+' '+esc(d.modele)+' '+esc(d.annee)+'</b></div><div class="kv"><span>Motorisation</span><b>'+esc(d.motor||'—')+'</b></div><div class="kv"><span>Kilométrage</span><b>'+esc(d.km||'—')+'</b></div><div class="kv"><span>Achat</span><b>'+esc(d.achat)+'</b></div><div class="kv"><span>Symptômes</span><b style="text-align:left;font-weight:400">'+esc(d.symptomes)+'</b></div>',
 'Véhicule '+d.marque+' '+d.modele+' '+d.annee+' — '+d.motor+' — '+d.km+'\nSymptômes : '+d.symptomes);
@@ -681,11 +700,11 @@ sec('Recommandations et stratégie','save','<ol style="padding-left:18px">'+acti
 d._kbTxt=kbEngines.map(function(k){return k.b+' '+k.m+' '+k.e.n+' → '+(k.e.i.length?k.e.i.map(function(i){return ISS[i].t}).join(' ; '):'aucun défaut référencé')+(k.e.r.length?' | rappels : '+k.e.r.map(function(r){return REC[r].n}).join(' ; '):'')}).join('\n');
 if(ai){html+='<div class="sec-title">'+IC.brain+' Contribution IA <span class="badge b-info">'+esc(ai.model)+'</span></div><div class="card ai-box">'+mdLite(ai.text)+'</div>';txt+='\n\n### CONTRIBUTION IA ('+ai.model+')\n'+ai.text}
 else{html+='<div class="sec-title">'+IC.brain+' Contribution IA</div><div class="card"><p class="sub">IA en ligne indisponible/désactivée — rapport issu de la base locale (100 % hors ligne).</p></div>';txt+='\n\n### CONTRIBUTION IA\nIndisponible — moteur expert local.'}
-txt+='\n\n— Rapport informatif généré par AutoLitige Expert v2.1. —';
+txt+='\n\n— Rapport informatif généré par AutoLitige Expert v2.2. —';
 return{html:html,txt:txt,aiModel:ai?ai.model:'local'}}
-/* ===== LANCEMENT ANALYSE ===== */
-$('#btnAnalyze').onclick=function(){var bSel=$('#f-b').value,mSel=$('#f-mo').value,eSel=$('#f-en').value;
-var d={marque:bSel==='__autre'?v('f-bx'):bSel,modele:mSel==='__autre'?v('f-mx'):mSel,motor:eSel==='__autre'?v('f-ex'):((eSel&&bSel&&bSel!=='__autre'&&KB[bSel]&&KB[bSel].e[eSel])?KB[bSel].e[eSel].n:(eSel||'')),annee:v('f-annee'),km:v('f-km'),achat:$('#f-achat').value,symptomes:v('f-symptomes'),dtc:v('f-dtc'),historique:v('f-historique'),parties:$$('input[name=parties]:checked').map(function(i){return i.value}),faits:$$('input[name=faits]:checked').map(function(i){return i.value})};
+/* ============ LANCEMENT ANALYSE ============ */
+function bindAnalyze(){$('#btnAnalyze').onclick=function(){var bSel=$('#f-b').value,mSel=$('#f-mo').value,eSel=$('#f-en').value;
+var d={marque:(bSel==='__autre')?v('f-bx'):bSel,modele:(mSel==='__autre')?v('f-mx'):mSel,motor:(eSel==='__autre')?v('f-ex'):((eSel&&bSel&&bSel!=='__autre'&&KB[bSel]&&KB[bSel].e[eSel])?KB[bSel].e[eSel].n:(eSel||'')),annee:v('f-annee'),km:v('f-km'),achat:$('#f-achat').value,symptomes:v('f-symptomes'),dtc:v('f-dtc'),historique:v('f-historique'),parties:$$('input[name=parties]:checked').map(function(i){return i.value}),faits:$$('input[name=faits]:checked').map(function(i){return i.value})};
 if(!d.marque&&!d.symptomes){toast('Sélectionnez une marque ou décrivez les symptômes','warn');return}
 $('#btnAnalyze').disabled=true;$('#aiStatusCard').style.display='block';var stx=$('#aiStatus');
 var kbEngines=[];
@@ -707,34 +726,37 @@ else{stx.textContent='Hors ligne / IA désactivée → base locale.';afterAI()}}
 $('#rep-txt').onclick=function(){if(window._curRep)dl('rapport-autolitige-'+Date.now()+'.txt',window._curRep.txt,'text/plain;charset=utf-8')};
 $('#rep-print').onclick=function(){window.print()};
 $('#rep-share').onclick=function(){var r=window._curRep;if(!r)return;var body='Rapport AutoLitige Expert — '+r.data.marque+' '+r.data.modele+'\n'+r.txt.slice(0,1800);
-if(navigator.share){navigator.share({title:'Rapport AutoLitige Expert',text:body}).catch(function(){})}else{navigator.clipboard.writeText(body).then(function(){toast('Rapport copié','ok')})}};
-/* ===== HISTORIQUE ===== */
+if(navigator.share){navigator.share({title:'Rapport AutoLitige Expert',text:body}).catch(function(){})}else if(navigator.clipboard){navigator.clipboard.writeText(body).then(function(){toast('Rapport copié','ok')})}};}
+/* ============ HISTORIQUE / REGLAGES / KIT ============ */
 function renderHistory(){$('#histList').innerHTML=DB.analyses.length?DB.analyses.map(function(a){return '<div class="hist-item" onclick="openAnalysis(\''+a.id+'\')"><div><b>'+esc(a.data.marque)+' '+esc(a.data.modele)+'</b> <span class="badge b-info">'+esc(a.aiModel)+'</span><br><span class="sub">'+new Date(a.date).toLocaleString('fr-FR')+'</span></div><button class="btn sm danger" onclick="event.stopPropagation();delAnalysis(\''+a.id+'\')">✖</button></div>'}).join(''):'<p class="sub">Aucune analyse enregistrée.</p>'}
 window.openAnalysis=function(id){var a=DB.analyses.find(function(x){return x.id===id});if(!a)return;window._curRep=a;$('#reportBox').innerHTML=a.html;show('s-report')};
 window.delAnalysis=function(id){DB.analyses=DB.analyses.filter(function(x){return x.id!==id});save();renderHistory();toast('Analyse supprimée','warn')};
-/* ===== REGLAGES ===== */
-function renderSettings(){$('#st-online').checked=DB.settings.aiOnline;$('#st-gem').checked=DB.settings.useGemini;$('#st-key').value=DB.settings.geminiKey;
+function renderSettings(){$('#st-online').checked=DB.settings.aiOnline;$('#st-gem').checked=DB.settings.useGemini;$('#st-key').value=DB.settings.geminiKey||'';
 $('#bk-info').textContent='Dernière sauvegarde : '+new Date(DB.savedAt).toLocaleString('fr-FR')+' · '+DB.analyses.length+' analyse(s), '+DB.users.length+' utilisateur(s), '+DB.codes.length+' code(s).'}
-$('#st-save').onclick=function(){DB.settings.aiOnline=$('#st-online').checked;DB.settings.useGemini=$('#st-gem').checked;DB.settings.geminiKey=v('st-key');save();toast('Réglages enregistrés','ok')};
+function bindSettings(){$('#st-save').onclick=function(){DB.settings.aiOnline=$('#st-online').checked;DB.settings.useGemini=$('#st-gem').checked;DB.settings.geminiKey=v('st-key');save();toast('Réglages enregistrés','ok')};
 $('#bk-exp').onclick=function(){dl('autolitige-sauvegarde-'+new Date().toISOString().slice(0,10)+'.json',JSON.stringify(DB,null,1),'application/json')};
 $('#bk-imp').onclick=function(){$('#fileImport').click()};
 $('#fileImport').onchange=function(e){var f=e.target.files[0];if(!f)return;var rd=new FileReader();rd.onload=function(){try{var j=JSON.parse(rd.result);if(!j.requests||!j.codes)throw 0;DB=j;save();toast('Sauvegarde importée ✔','ok');renderNav();enterApp()}catch(x){toast('Fichier invalide','bad')}};rd.readAsText(f);e.target.value=''};
 $('#bk-reset').onclick=function(){modal('<h3>🗑️ Réinitialiser ?</h3><p class="sub">Toutes les données locales seront effacées.</p><button class="btn danger" id="rz-yes">Oui, tout effacer</button><button class="btn sec" onclick="closeModal()">Annuler</button>');
-$('#rz-yes').onclick=function(){localStorage.removeItem(LS_KEY);localStorage.removeItem(SESS_KEY);location.reload()}};
-/* ===== KIT ===== */
-function iconPNG(size){return new Promise(function(res){var img=new Image();img.onload=function(){var c=document.createElement('canvas');c.width=c.height=size;c.getContext('2d').drawImage(img,0,0,size,size);c.toBlob(function(b){res(b)},'image/png')};img.src='data:image/svg+xml;utf8,'+encodeURIComponent(LOGO_SVG)})}
+ $('#rz-yes').onclick=function(){localStorage.removeItem(LS_KEY);localStorage.removeItem(SESS_KEY);location.reload()}};
 $('#kit-btn').onclick=function(){dl('index.html','<!DOCTYPE html>\n'+document.documentElement.outerHTML,'text/html');
 dl('sw.js',SW_SRC,'text/javascript');dl('manifest.webmanifest',JSON.stringify(MANIFEST,null,1),'application/manifest+json');
-iconPNG(512).then(function(b){dl('icon-512.png',b,'image/png');return iconPNG(192)}).then(function(b){dl('icon-192.png',b,'image/png');toast('Kit téléchargé — placez les 5 fichiers à la racine du dépôt','ok')})};
-/* ===== MANIFEST & SW ===== */
-const MANIFEST={name:'AutoLitige Expert v2.1 — Pannes connues, rappels & litiges auto',short_name:'AutoLitige',start_url:'./index.html',scope:'./',display:'standalone',orientation:'portrait',background_color:'#0b1220',theme_color:'#0b1220',lang:'fr',description:'Base technique marques/modèles/motorisations, pannes connues, campagnes de rappel, codes DTC et droit français. Hors ligne.',icons:[{src:'icon-192.png',sizes:'192x192',type:'image/png',purpose:'any'},{src:'icon-512.png',sizes:'512x512',type:'image/png',purpose:'any maskable'}]};
-const SW_SRC="var CACHE='autolitige-v2';\nself.addEventListener('install',function(e){e.waitUntil(caches.open(CACHE).then(function(c){return c.addAll(['./','./index.html','./manifest.webmanifest','./icon-192.png','./icon-512.png'])}).catch(function(){}));self.skipWaiting()});\nself.addEventListener('activate',function(e){e.waitUntil(caches.keys().then(function(ks){return Promise.all(ks.filter(function(k){return k!==CACHE}).map(function(k){return caches.delete(k)}))}));self.clients.claim()});\nvar NOCACHE=['api.nhtsa.gov','text.pollinations.ai','generativelanguage.googleapis.com','rappels-produits.gouv.fr'];\nself.addEventListener('fetch',function(e){var u=new URL(e.request.url);\nif(e.request.method!=='GET'||NOCACHE.some(function(h){return u.hostname.indexOf(h)>=0}))return;\ne.respondWith(caches.match(e.request).then(function(r){return r||fetch(e.request).then(function(res){if(res.ok&&u.origin===location.origin){var cp=res.clone();caches.open(CACHE).then(function(c){c.put(e.request,cp)})}return res}).catch(function(){return caches.match('./index.html')})}))});";
-if('serviceWorker'in navigator&&location.protocol.indexOf('http')===0){navigator.serviceWorker.register('./sw.js').catch(function(){})}
-addEventListener('storage',function(e){if(e.key===LS_KEY){try{DB=JSON.parse(e.newValue)||DB}catch(x){}if($('#s-access').classList.contains('on'))renderAccess()}});
-/* ===== INIT ===== */
+iconPNG(512).then(function(b){dl('icon-512.png',b,'image/png');return iconPNG(192)}).then(function(b){dl('icon-192.png',b,'image/png');toast('Kit téléchargé — placez les 5 fichiers à la racine du dépôt','ok')})}}
+function iconPNG(size){return new Promise(function(res){var img=new Image();img.onload=function(){var c=document.createElement('canvas');c.width=c.height=size;c.getContext('2d').drawImage(img,0,0,size,size);c.toBlob(function(b){res(b)},'image/png')};img.src='data:image/svg+xml;utf8,'+encodeURIComponent(LOGO_SVG)})}
+/* ============ MANIFEST & SW ============ */
+var MANIFEST={name:'AutoLitige Expert v2.2 — Pannes connues, rappels & litiges auto',short_name:'AutoLitige',start_url:'./index.html',scope:'./',display:'standalone',orientation:'portrait',background_color:'#0b1220',theme_color:'#0b1220',lang:'fr',description:'Base technique marques/modèles/motorisations, pannes connues, campagnes de rappel, codes DTC et droit français. Hors ligne.',icons:[{src:'icon-192.png',sizes:'192x192',type:'image/png',purpose:'any'},{src:'icon-512.png',sizes:'512x512',type:'image/png',purpose:'any maskable'}]};
+var SW_SRC="var CACHE='autolitige-v3';\nself.addEventListener('install',function(e){e.waitUntil(caches.open(CACHE).then(function(c){return c.addAll(['./','./index.html','./manifest.webmanifest','./icon-192.png','./icon-512.png'])}).catch(function(){}));self.skipWaiting()});\nself.addEventListener('activate',function(e){e.waitUntil(caches.keys().then(function(ks){return Promise.all(ks.filter(function(k){return k!==CACHE}).map(function(k){return caches.delete(k)}))}));self.clients.claim()});\nvar NOCACHE=['api.nhtsa.gov','text.pollinations.ai','generativelanguage.googleapis.com','rappels-produits.gouv.fr'];\nself.addEventListener('fetch',function(e){var u=new URL(e.request.url);\nif(e.request.method!=='GET'||NOCACHE.some(function(h){return u.hostname.indexOf(h)>=0}))return;\ne.respondWith(caches.match(e.request).then(function(r){return r||fetch(e.request).then(function(res){if(res.ok&&u.origin===location.origin){var cp=res.clone();caches.open(CACHE).then(function(c){c.put(e.request,cp)})}return res}).catch(function(){return caches.match('./index.html')})}))});";
+/* ============ INIT ============ */
+function init(){
+bindAuth();bindLib();bindForm();bindAnalyze();bindSettings();
 fillBrands($('#f-b'),true);fillBrands($('#lib-b'),false);
+var st=selfTest();
+if(st.problems.length){showErr('Autocontrôle : '+st.problems.length+' anomalie(s) — '+st.problems.slice(0,3).join(' | '))}
+else{$('#selftest').textContent='Autocontrôle OK ✔ · '+st.brands+' marques · '+st.engines+' motorisations · '+st.iss+' défauts documentés · '+st.rec+' campagnes de rappel'}
 updateConn();setInterval(updateConn,5000);
-var s0=sessionValid();renderNav();if(s0){enterApp()}else{show('s-login')}
+if('serviceWorker' in navigator&&location.protocol.indexOf('http')===0){navigator.serviceWorker.register('./sw.js').catch(function(){})}
+var s0=sessionValid();renderNav();if(s0){enterApp()}else{show('s-login')}}
+try{init()}catch(e){showErr('ERREUR INIT : '+e.message)}
 </script>
 </body>
 </html>
